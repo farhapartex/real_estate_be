@@ -5,10 +5,14 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/farhapartex/real_estate_be/config"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	config.ConnectDB()
+	config.MigrateDB()
+
 	r := gin.Default()
 
 	r.GET("/", HealthCheckHandler)

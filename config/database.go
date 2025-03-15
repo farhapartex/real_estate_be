@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/farhapartex/real_estate_be/models"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -36,4 +37,22 @@ func ConnectDB() {
 
 	DB = db
 	fmt.Println("DB connection successfull!")
+}
+
+func MigrateDB() {
+	fmt.Println("Running DB migration ...")
+
+	dbModels := []interface{}{
+		&models.User{},
+		&models.OwnerProfile{},
+	}
+
+	for _, model := range dbModels {
+		err := DB.AutoMigrate(model)
+		if err != nil {
+			fmt.Printf("Error migrating %T: %v\n", model, err)
+		}
+	}
+
+	fmt.Println("... DB migration completed.")
 }
