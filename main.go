@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/farhapartex/real_estate_be/config"
+	"github.com/farhapartex/real_estate_be/routes"
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,6 +15,8 @@ func main() {
 	config.MigrateDB()
 
 	r := gin.Default()
+
+	routes.RegisterRoute(r)
 
 	r.GET("/", HealthCheckHandler)
 	r.GET("/health_check", HealthCheckHandler)
