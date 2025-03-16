@@ -8,9 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var authController = controllers.NewAuthController()
-
-func SignIn(c *gin.Context) {
+func SignIn(c *gin.Context, authController *controllers.AuthController) {
 	var request dto.LoginRequestDTO
 
 	if err := c.ShouldBindJSON(&request); err != nil {

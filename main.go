@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/farhapartex/real_estate_be/config"
+	"github.com/farhapartex/real_estate_be/controllers"
 	"github.com/farhapartex/real_estate_be/routes"
 	"github.com/gin-gonic/gin"
 )
@@ -14,9 +15,11 @@ func main() {
 	config.ConnectDB()
 	config.MigrateDB()
 
+	authController := controllers.NewAuthController(config.DB)
+
 	r := gin.Default()
 
-	routes.RegisterRoute(r)
+	routes.RegisterRoute(r, authController)
 
 	r.GET("/", HealthCheckHandler)
 	r.GET("/health_check", HealthCheckHandler)
