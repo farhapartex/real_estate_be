@@ -33,3 +33,9 @@ func UserToLoginResponse(user models.User, token string) dto.LoginResponseDTO {
 		User:  UserToUserDetail(user),
 	}
 }
+
+func UserToRegistrationResponse(user models.User) dto.RegisterResponseDTO {
+	return dto.RegisterResponseDTO{
+		FirstName: user.FirstName,
+	}
+}

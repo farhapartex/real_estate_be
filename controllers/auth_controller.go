@@ -50,3 +50,37 @@ func (c *AuthController) Login(request dto.LoginRequestDTO) (*dto.LoginResponseD
 	response := mapper.UserToLoginResponse(user, token)
 	return &response, nil
 }
+
+func (c *AuthController) SignUp(request dto.RegisterRequestDTO) (*dto.RegisterResponseDTO, error) {
+	var existingUser models.User
+	result := c.DB.Where("email = ?", request.Email).First(&existingUser)
+	if result.RowsAffected > 0 {
+		return nil, errors.New("userExistsWithEmail")
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
+
+	if err != nil {
+		return nil, errors.New("passwordProcessError")
+	}
+
+	newUser := mapper.RegisterRequestToUserModel(request, string(hashedPassword))
+
+	// start DB Transaction
+	tx := c.DB.Begin()
+
+	err = tx.Create(&newUser).Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errors.New("userRegistrationfailed")
+	}
+
+	err = tx.Commit().Error
+	if err != nil {
+		return nil, errors.New("userRegistrationfailed")
+	}
+
+	response := mapper.UserToRegistrationResponse(newUser)
+
+	return &response, nil
+}

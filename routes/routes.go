@@ -14,6 +14,10 @@ func RegisterRoute(r *gin.Engine, authController *controllers.AuthController) {
 			auth.POST("/token", func(ctx *gin.Context) {
 				views.SignIn(ctx, authController)
 			})
+
+			auth.POST("/signup", func(ctx *gin.Context) {
+				views.SignUp(ctx, authController)
+			})
 		}
 	}
 }
