@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/farhapartex/real_estate_be/config"
 	"github.com/farhapartex/real_estate_be/controllers"
+	"github.com/farhapartex/real_estate_be/middlewares"
 	"github.com/farhapartex/real_estate_be/routes"
 	"github.com/gin-gonic/gin"
 )
@@ -19,12 +21,21 @@ func main() {
 
 	r := gin.Default()
 
+	// setup middlewares
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
+	r.Use(middlewares.CORSMiddleware())
+
+	// setup routes
 	routes.RegisterRoute(r, authController)
 
+	// system health check route
 	r.GET("/", HealthCheckHandler)
 	r.GET("/health_check", HealthCheckHandler)
 
-	err := r.Run(":8000")
+	port := os.Getenv("port")
+
+	err := r.Run(":" + port)
 	if err != nil {
 		log.Fatal("Error from main: ", err)
 	}
