@@ -36,4 +36,5 @@ type UserMeDTO struct {
 	Email         string     `json:"email"`
 	LastLoginAt   *time.Time `json:"last_login_at,omitempty"`
 	EmailVerified bool       `json:"email_verified"`
+	Role          string     `json:"role"`
 }

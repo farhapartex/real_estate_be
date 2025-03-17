@@ -47,5 +47,6 @@ func UserToMeResponse(user models.User) dto.UserMeDTO {
 		Email:         user.Email,
 		LastLoginAt:   user.LastLoginAt,
 		EmailVerified: user.EmailVerified,
+		Role:          string(user.Role),
 	}
 }
