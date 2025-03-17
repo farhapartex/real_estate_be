@@ -24,7 +24,7 @@ func main() {
 	r.GET("/", HealthCheckHandler)
 	r.GET("/health_check", HealthCheckHandler)
 
-	err := r.Run(":8080")
+	err := r.Run(":8000")
 	if err != nil {
 		log.Fatal("Error from main: ", err)
 	}

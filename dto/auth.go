@@ -6,8 +6,7 @@ type LoginRequestDTO struct {
 }
 
 type LoginResponseDTO struct {
-	Token string             `json:"token"`
-	User  UserDetailShortDTO `json:"user"`
+	Token string `json:"token"`
 }
 
 type RegisterRequestDTO struct {

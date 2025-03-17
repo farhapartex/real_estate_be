@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"errors"
+	"os"
 	"time"
 
 	"github.com/farhapartex/real_estate_be/dto"
@@ -47,7 +48,7 @@ func (c *AuthController) Login(request dto.LoginRequestDTO) (*dto.LoginResponseD
 	currentTime := time.Now()
 	c.DB.Model(&user).Update("last_login_at", currentTime)
 
-	response := mapper.UserToLoginResponse(user, token)
+	response := mapper.UserToLoginResponse(token)
 	return &response, nil
 }
 
@@ -83,4 +84,35 @@ func (c *AuthController) SignUp(request dto.RegisterRequestDTO) (*dto.RegisterRe
 	response := mapper.UserToRegistrationResponse(newUser)
 
 	return &response, nil
+}
+
+func (c *AuthController) ConfigureAdmin() error {
+	firstName := os.Getenv("ADMIN_FIRST_NAME")
+	lastName := os.Getenv("ADMIN_LAST_NAME")
+	email := os.Getenv("ADMIN_EMAIL")
+	password := os.Getenv("ADMIN_PASSWORD")
+
+	var count int64
+
+	c.DB.Model(&models.User{}).Where("email =?", email).Count(&count)
+	if count > 0 {
+		return errors.New("User exists!")
+	}
+
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+
+	admin := models.User{
+		FirstName:     firstName,
+		LastName:      lastName,
+		Email:         email,
+		Password:      string(hashedPassword),
+		IsSuperuser:   true,
+		Role:          models.Role("admin"),
+		Status:        "active",
+		EmailVerified: true,
+	}
+
+	err := c.DB.Create(&admin).Error
+
+	return err
 }

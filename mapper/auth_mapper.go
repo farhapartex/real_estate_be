@@ -27,10 +27,9 @@ func UserToUserDetail(user models.User) dto.UserDetailShortDTO {
 	}
 }
 
-func UserToLoginResponse(user models.User, token string) dto.LoginResponseDTO {
+func UserToLoginResponse(token string) dto.LoginResponseDTO {
 	return dto.LoginResponseDTO{
 		Token: token,
-		User:  UserToUserDetail(user),
 	}
 }
 

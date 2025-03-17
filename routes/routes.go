@@ -18,6 +18,10 @@ func RegisterRoute(r *gin.Engine, authController *controllers.AuthController) {
 			auth.POST("/signup", func(ctx *gin.Context) {
 				views.SignUp(ctx, authController)
 			})
+
+			auth.POST("/admin", func(ctx *gin.Context) {
+				views.SystemAdmin(ctx, authController)
+			})
 		}
 	}
 }

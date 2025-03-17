@@ -8,6 +8,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func SystemAdmin(ctx *gin.Context, authController *controllers.AuthController) {
+
+	err := authController.ConfigureAdmin()
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Success"})
+
+}
+
 func SignUp(ctx *gin.Context, authController *controllers.AuthController) {
 	var request dto.RegisterRequestDTO
 
