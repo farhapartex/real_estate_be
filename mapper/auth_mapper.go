@@ -41,6 +41,7 @@ func UserToRegistrationResponse(user models.User) dto.RegisterResponseDTO {
 
 func UserToMeResponse(user models.User) dto.UserMeDTO {
 	return dto.UserMeDTO{
+		ID:            user.ID,
 		FirstName:     user.FirstName,
 		LastName:      user.LastName,
 		Email:         user.Email,
