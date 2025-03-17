@@ -9,6 +9,7 @@ import (
 	"github.com/farhapartex/real_estate_be/mapper"
 	"github.com/farhapartex/real_estate_be/models"
 	"github.com/farhapartex/real_estate_be/utils"
+	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -115,4 +116,18 @@ func (c *AuthController) ConfigureAdmin() error {
 	err := c.DB.Create(&admin).Error
 
 	return err
+}
+
+func (c *AuthController) UserMeData(ctx *gin.Context) (*dto.UserMeDTO, error) {
+	user, exists := ctx.Get(("user"))
+	if !exists {
+		return nil, errors.New("Authentication required")
+	}
+	userMode, ok := user.(models.User)
+	if !ok {
+		return nil, errors.New("Could not process user data")
+	}
+
+	response := mapper.UserToMeResponse(userMode)
+	return &response, nil
 }

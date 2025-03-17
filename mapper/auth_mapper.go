@@ -38,3 +38,13 @@ func UserToRegistrationResponse(user models.User) dto.RegisterResponseDTO {
 		FirstName: user.FirstName,
 	}
 }
+
+func UserToMeResponse(user models.User) dto.UserMeDTO {
+	return dto.UserMeDTO{
+		FirstName:     user.FirstName,
+		LastName:      user.LastName,
+		Email:         user.Email,
+		LastLoginAt:   user.LastLoginAt,
+		EmailVerified: user.EmailVerified,
+	}
+}

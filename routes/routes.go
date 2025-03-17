@@ -2,14 +2,15 @@ package routes
 
 import (
 	"github.com/farhapartex/real_estate_be/controllers"
+	"github.com/farhapartex/real_estate_be/middlewares"
 	"github.com/farhapartex/real_estate_be/views"
 	"github.com/gin-gonic/gin"
 )
 
 func RegisterRoute(r *gin.Engine, authController *controllers.AuthController) {
-	api := r.Group("/api/v1")
+	publicApi := r.Group("/api/v1")
 	{
-		auth := api.Group("/auth")
+		auth := publicApi.Group("/auth")
 		{
 			auth.POST("/token", func(ctx *gin.Context) {
 				views.SignIn(ctx, authController)
@@ -23,5 +24,13 @@ func RegisterRoute(r *gin.Engine, authController *controllers.AuthController) {
 				views.SystemAdmin(ctx, authController)
 			})
 		}
+	}
+
+	protectedAPI := r.Group("/api/v1")
+	protectedAPI.Use(middlewares.AuthMiddleware())
+	{
+		protectedAPI.GET("/me", func(ctx *gin.Context) {
+			views.Me(ctx, authController)
+		})
 	}
 }

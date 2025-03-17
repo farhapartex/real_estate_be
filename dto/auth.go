@@ -1,5 +1,7 @@
 package dto
 
+import "time"
+
 type LoginRequestDTO struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required"`
@@ -25,4 +27,13 @@ type UserDetailShortDTO struct {
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
 	Email     string `json:"email"`
+}
+
+type UserMeDTO struct {
+	ID            uint       `json:"id"`
+	FirstName     string     `json:"first_name"`
+	LastName      string     `json:"last_name"`
+	Email         string     `json:"email"`
+	LastLoginAt   *time.Time `json:"last_login_at,omitempty"`
+	EmailVerified bool       `json:"email_verified"`
 }

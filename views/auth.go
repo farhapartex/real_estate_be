@@ -60,3 +60,16 @@ func SignIn(c *gin.Context, authController *controllers.AuthController) {
 	c.JSON(http.StatusOK, response)
 
 }
+
+func Me(c *gin.Context, authController *controllers.AuthController) {
+
+	response, err := authController.UserMeData(c)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
+
+}
