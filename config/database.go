@@ -45,6 +45,9 @@ func MigrateDB() {
 	dbModels := []interface{}{
 		&models.User{},
 		&models.OwnerProfile{},
+		&models.Country{},
+		&models.Division{},
+		&models.District{},
 	}
 
 	for _, model := range dbModels {
