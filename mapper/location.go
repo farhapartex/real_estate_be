@@ -11,3 +11,11 @@ func CountryDtoToModelMapper(request dto.CountryRequestDTO) models.Country {
 		Code: request.Code,
 	}
 }
+
+func CountryModelToDTOMapper(country models.Country) dto.CountryResponseDTO {
+	return dto.CountryResponseDTO{
+		ID:   country.ID,
+		Name: country.Name,
+		Code: country.Code,
+	}
+}

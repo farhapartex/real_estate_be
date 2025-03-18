@@ -32,5 +32,11 @@ func RegisterRoute(r *gin.Engine, authController *controllers.AuthController) {
 		protectedAPI.GET("/me", func(ctx *gin.Context) {
 			views.Me(ctx, authController)
 		})
+		protectedAPI.GET("/admin/countries", func(ctx *gin.Context) {
+			views.CountryList(ctx, authController)
+		})
+		protectedAPI.POST("/admin/countries", func(ctx *gin.Context) {
+			views.CreateCountry(ctx, authController)
+		})
 	}
 }
