@@ -41,5 +41,8 @@ func RegisterRoute(r *gin.Engine, authController *controllers.AuthController) {
 		protectedAPI.PATCH("/admin/countries/:id", func(ctx *gin.Context) {
 			views.CountryUpdate(ctx, authController)
 		})
+		protectedAPI.DELETE("/admin/countries/:id", func(ctx *gin.Context) {
+			views.CountryDelete(ctx, authController)
+		})
 	}
 }

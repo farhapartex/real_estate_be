@@ -113,3 +113,32 @@ func (c *AuthController) UpdateCountry(id uint32, request dto.CountryUpdateReque
 
 	return &response, nil
 }
+
+func (c *AuthController) DeleteCountry(id uint32) error {
+	if c.DB == nil {
+		c.DB = config.DB
+	}
+	var country models.Country
+
+	if err := c.DB.First(&country, id).Error; err != nil {
+		return errors.New("Cuontry not found")
+	}
+
+	var divisionCount int64
+	c.DB.Model(&models.Division{}).Where("country_id = ?", id).Count(&divisionCount)
+	if divisionCount > 0 {
+		return errors.New("Cannot delete country with associated divisions")
+	}
+
+	tx := c.DB.Begin()
+	if err := tx.Delete(&country).Error; err != nil {
+		tx.Rollback()
+		return errors.New("Failed to delete country")
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return errors.New("Failed to delete country")
+	}
+
+	return nil
+}

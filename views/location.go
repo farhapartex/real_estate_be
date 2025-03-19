@@ -72,9 +72,28 @@ func CountryUpdate(ctx *gin.Context, authContoller *controllers.AuthController) 
 	response, err := authContoller.UpdateCountry(uint32(id), request)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, err.Error())
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	ctx.JSON(http.StatusCreated, response)
+}
+
+func CountryDelete(ctx *gin.Context, authContoller *controllers.AuthController) {
+	idParam := ctx.Param("id")
+	id, err := strconv.ParseUint(idParam, 10, 32)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid country ID"})
+		return
+	}
+
+	err = authContoller.DeleteCountry(uint32(id))
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusNoContent, nil)
 }
