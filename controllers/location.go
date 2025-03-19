@@ -29,7 +29,7 @@ func (c *AuthController) CreateCountry(request dto.CountryRequestDTO) (*dto.Coun
 		return nil, errors.New("Country creation failed")
 	}
 
-	response := mapper.CountryModelToDTOMapper(newCountry)
+	response := mapper.CountryModelToDTOMapper(newCountry, 0)
 
 	return &response, nil
 }
@@ -54,10 +54,8 @@ func (c *AuthController) ListCountries(page, pageSize int) ([]dto.CountryRespons
 		pageSize = 10
 	}
 
-	// Calculate offset
 	offset := (page - 1) * pageSize
 
-	// Get paginated records
 	result := c.DB.Order("name ASC").Offset(offset).Limit(pageSize).Find(&countries)
 	if result.Error != nil {
 		return nil, 0, errors.New("Failed to fetch countries")
@@ -66,7 +64,10 @@ func (c *AuthController) ListCountries(page, pageSize int) ([]dto.CountryRespons
 	// Map models to DTOs
 	var responseDTOs []dto.CountryResponseDTO
 	for _, country := range countries {
-		dto := mapper.CountryModelToDTOMapper(country)
+		var divisionCount int64
+		c.DB.Model(&models.Division{}).Where("country_id = ?", country.ID).Count(&divisionCount)
+
+		dto := mapper.CountryModelToDTOMapper(country, divisionCount)
 		responseDTOs = append(responseDTOs, dto)
 	}
 

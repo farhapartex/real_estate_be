@@ -6,7 +6,9 @@ type CountryRequestDTO struct {
 }
 
 type CountryResponseDTO struct {
-	ID   uint32 `json:"id"`
-	Name string `json:"name"`
-	Code string `json:"code"`
+	ID        uint32 `json:"id"`
+	Name      string `json:"name"`
+	Code      string `json:"code"`
+	Status    bool   `json:"status"`
+	Divisions int64  `json:"divisions"`
 }
