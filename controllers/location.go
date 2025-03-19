@@ -73,3 +73,43 @@ func (c *AuthController) ListCountries(page, pageSize int) ([]dto.CountryRespons
 
 	return responseDTOs, total, nil
 }
+
+func (c *AuthController) UpdateCountry(id uint32, request dto.CountryUpdateRequestDTO) (*dto.CountryResponseDTO, error) {
+	if c.DB == nil {
+		c.DB = config.DB
+	}
+	var country models.Country
+
+	if err := c.DB.First(&country, id).Error; err != nil {
+		return nil, errors.New("Cuontry not found")
+	}
+	if country.Code != request.Code {
+		var existingCountry models.Country
+		result := c.DB.Where("code = ? AND id != ?", request.Code, id).First(&existingCountry)
+		if result.RowsAffected > 0 {
+			return nil, errors.New("Country with this code already exists")
+		}
+	}
+
+	tx := c.DB.Begin()
+	country.Name = request.Name
+	country.Code = request.Code
+	country.Status = request.Status
+
+	err := tx.Save(&country).Error
+	if err != nil {
+		return nil, errors.New("Failed to update country")
+	}
+
+	err = tx.Commit().Error
+	if err != nil {
+		return nil, errors.New("Failed to update country")
+	}
+
+	var divisionCount int64
+	c.DB.Model(&models.Division{}).Where("country_id = ?", country.ID).Count(&divisionCount)
+
+	response := mapper.CountryModelToDTOMapper(country, divisionCount)
+
+	return &response, nil
+}

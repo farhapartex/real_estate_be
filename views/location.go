@@ -51,3 +51,30 @@ func CountryList(ctx *gin.Context, authContoller *controllers.AuthController) {
 		"data":     response,
 	})
 }
+
+func CountryUpdate(ctx *gin.Context, authContoller *controllers.AuthController) {
+	idParam := ctx.Param("id")
+	id, err := strconv.ParseUint(idParam, 10, 32)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid country ID"})
+		return
+	}
+
+	var request dto.CountryUpdateRequestDTO
+
+	err = ctx.ShouldBindJSON(&request)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data"})
+		return
+	}
+
+	response, err := authContoller.UpdateCountry(uint32(id), request)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, response)
+}

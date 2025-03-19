@@ -38,5 +38,8 @@ func RegisterRoute(r *gin.Engine, authController *controllers.AuthController) {
 		protectedAPI.POST("/admin/countries", func(ctx *gin.Context) {
 			views.CreateCountry(ctx, authController)
 		})
+		protectedAPI.PATCH("/admin/countries/:id", func(ctx *gin.Context) {
+			views.CountryUpdate(ctx, authController)
+		})
 	}
 }
