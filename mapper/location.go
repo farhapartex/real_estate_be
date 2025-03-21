@@ -21,3 +21,21 @@ func CountryModelToDTOMapper(country models.Country, divisionCount int64) dto.Co
 		Divisions: divisionCount,
 	}
 }
+
+func DivisionDtoToModelMapper(request dto.DivisionRequestDTO) models.Division {
+	return models.Division{
+		Name:      request.Name,
+		CountryId: request.CountryId,
+	}
+}
+
+func DivisionModelToDTOMapper(division models.Division, countryName string, districtCount int64) dto.DivisionResponseDTO {
+	return dto.DivisionResponseDTO{
+		ID:        division.ID,
+		Name:      division.Name,
+		Country:   countryName,
+		CountryID: division.CountryId,
+		Status:    division.Status,
+		Districts: districtCount,
+	}
+}

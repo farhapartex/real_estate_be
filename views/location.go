@@ -44,7 +44,7 @@ func CountryList(ctx *gin.Context, authContoller *controllers.AuthController) {
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{
+	ctx.JSON(http.StatusOK, gin.H{
 		"total":    total,
 		"page":     page,
 		"pageSize": pageSize,
@@ -76,7 +76,7 @@ func CountryUpdate(ctx *gin.Context, authContoller *controllers.AuthController) 
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, response)
+	ctx.JSON(http.StatusOK, response)
 }
 
 func CountryDelete(ctx *gin.Context, authContoller *controllers.AuthController) {

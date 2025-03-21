@@ -142,3 +142,28 @@ func (c *AuthController) DeleteCountry(id uint32) error {
 
 	return nil
 }
+
+func (c *AuthController) CreateDivision(request dto.CountryRequestDTO) (*dto.CountryResponseDTO, error) {
+	var country models.Country
+
+	result := c.DB.Where("code = ?", request.Code).First(&country)
+	if result.RowsAffected > 0 {
+		return nil, errors.New("Cuontry exists")
+	}
+
+	newCountry := mapper.CountryDtoToModelMapper(request)
+	tx := c.DB.Begin()
+	err := tx.Create(&newCountry).Error
+	if err != nil {
+		return nil, errors.New("Country creation failed")
+	}
+
+	err = tx.Commit().Error
+	if err != nil {
+		return nil, errors.New("Country creation failed")
+	}
+
+	response := mapper.CountryModelToDTOMapper(newCountry, 0)
+
+	return &response, nil
+}
