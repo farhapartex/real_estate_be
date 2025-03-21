@@ -97,3 +97,21 @@ func CountryDelete(ctx *gin.Context, authContoller *controllers.AuthController) 
 
 	ctx.JSON(http.StatusNoContent, nil)
 }
+
+func CreateDivision(ctx *gin.Context, authContoller *controllers.AuthController) {
+	var request dto.DivisionRequestDTO
+	err := ctx.ShouldBindJSON(&request)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data"})
+		return
+	}
+
+	response, err := authContoller.CreateDivision(request)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, response)
+}

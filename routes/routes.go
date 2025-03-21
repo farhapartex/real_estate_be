@@ -44,5 +44,9 @@ func RegisterRoute(r *gin.Engine, authController *controllers.AuthController) {
 		protectedAPI.DELETE("/admin/countries/:id", func(ctx *gin.Context) {
 			views.CountryDelete(ctx, authController)
 		})
+
+		protectedAPI.POST("/admin/divisions", func(ctx *gin.Context) {
+			views.CreateDivision(ctx, authController)
+		})
 	}
 }
