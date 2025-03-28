@@ -229,12 +229,6 @@ func (c *AuthController) UpdateDivision(id uint32, request dto.DivisionUpdateReq
 
 	tx := c.DB.Begin()
 
-	// err := tx.Model(&division).Updates(map[string]interface{}{
-	// 	"country_id": request.CountryID,
-	// 	"name":       request.Name,
-	// 	"status":     request.Status,
-	// }).Error
-
 	err := tx.Exec("UPDATE divisions SET country_id = ?, name = ?, status = ?, updated_at = NOW() WHERE id = ?",
 		request.CountryID, request.Name, request.Status, id).Error
 
@@ -296,4 +290,65 @@ func (c *AuthController) DeleteDivision(id uint32) error {
 	}
 
 	return nil
+}
+
+func (c *AuthController) CreateDistrict(request dto.DistrictRequestDTO) (*dto.DistrictResponseDTO, error) {
+	var division models.Division
+
+	result := c.DB.Preload("Country").First(&division, request.DivisionId)
+	if result.RowsAffected == 0 {
+		return nil, errors.New("Division not exists")
+	}
+
+	district := mapper.DistrictDtoToModelMapper(request, division)
+	tx := c.DB.Begin()
+	err := tx.Create(&district).Error
+	if err != nil {
+		return nil, errors.New("District creation failed")
+	}
+
+	err = tx.Commit().Error
+	if err != nil {
+		return nil, errors.New("District commit creation failed")
+	}
+
+	district.Division = division
+	district.Country = division.Country
+
+	response := mapper.DistrictModelToDTOMapper(district)
+
+	return &response, nil
+}
+
+func (c *AuthController) DistrictList(page, pageSize int) ([]dto.DistrictResponseDTO, int64, error) {
+	if c.DB == nil {
+		c.DB = config.DB
+	}
+
+	var districts []models.District
+	var total int64
+
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+	offset := (page - 1) * pageSize
+
+	result := c.DB.Preload("Country").Preload("Division").Preload("Division.Country").Order("name ASC").Offset(offset).Limit(pageSize).Find(&districts)
+	if result.Error != nil {
+		return nil, 0, errors.New("Failed to fetch districts")
+	}
+
+	c.DB.Model(&models.District{}).Count(&total)
+
+	var responseDTOs []dto.DistrictResponseDTO
+	for _, district := range districts {
+		dto := mapper.DistrictModelToDTOMapper(district)
+		responseDTOs = append(responseDTOs, dto)
+	}
+
+	return responseDTOs, total, nil
+
 }

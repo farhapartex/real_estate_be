@@ -186,3 +186,46 @@ func DivisionDelete(ctx *gin.Context, authContoller *controllers.AuthController)
 
 	ctx.JSON(http.StatusNoContent, nil)
 }
+
+func CreateDistrict(ctx *gin.Context, authContoller *controllers.AuthController) {
+	var request dto.DistrictRequestDTO
+	err := ctx.ShouldBindJSON(&request)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data"})
+		return
+	}
+
+	response, err := authContoller.CreateDistrict(request)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, response)
+}
+
+func DistrictList(ctx *gin.Context, authContoller *controllers.AuthController) {
+	page, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("pageSize", "10"))
+	if page < 1 {
+		page = 1
+	}
+	if pageSize < 1 || pageSize > 100 {
+		pageSize = 10 // Set reasonable limits
+	}
+
+	response, total, err := authContoller.DistrictList(page, pageSize)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"total":    total,
+		"page":     page,
+		"pageSize": pageSize,
+		"data":     response,
+	})
+}

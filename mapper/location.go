@@ -41,3 +41,28 @@ func DivisionModelToDTOMapper(division models.Division, countryInfo string, dist
 		Districts: districtCount,
 	}
 }
+
+func DistrictDtoToModelMapper(request dto.DistrictRequestDTO, division models.Division) models.District {
+	return models.District{
+		Name:       request.Name,
+		DivisionId: request.DivisionId,
+		CountryId:  division.CountryId,
+		Status:     true,
+	}
+}
+
+func DistrictModelToDTOMapper(district models.District) dto.DistrictResponseDTO {
+	return dto.DistrictResponseDTO{
+		ID:   district.ID,
+		Name: district.Name,
+		Division: dto.DivisionMinimalDTO{
+			ID:   district.Division.ID,
+			Name: district.Division.Name,
+			Country: dto.CountryMinimalDTO{
+				ID:   district.Division.Country.ID,
+				Name: district.Division.Country.Name,
+			},
+		},
+		Status: district.Status,
+	}
+}
