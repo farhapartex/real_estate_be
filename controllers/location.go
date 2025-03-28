@@ -478,3 +478,45 @@ func (pc *AuthController) GetCountries(page, pageSize int) (*dto.PaginatedRespon
 	response := mapper.CreatePaginatedResponse(responseDTOs, total, page, pageSize)
 	return &response, nil
 }
+
+func (pc *AuthController) GetDivisions(page, pageSize, countryId int) (*dto.PaginatedResponse, error) {
+	// Ensure DB is initialized
+	if pc.DB == nil {
+		pc.DB = config.DB
+	}
+
+	offset := (page - 1) * pageSize
+
+	var country models.Country
+	if err := pc.DB.Where("id = ? AND status = ?", countryId, true).First(&country).Error; err != nil {
+		return nil, errors.New("Country not found")
+	}
+
+	var divisions []models.Division
+	var total int64
+
+	pc.DB.Model(&models.Division{}).
+		Where("country_id = ? AND status = ?", countryId, true).
+		Count(&total)
+
+	result := pc.DB.Where("country_id = ? AND status = ?", countryId, true).
+		Preload("Country").
+		Order("name ASC").
+		Offset(offset).
+		Limit(pageSize).
+		Find(&divisions)
+
+	if result.Error != nil {
+		return nil, errors.New("Failed to fetch divisions")
+	}
+
+	var responseDTOs []dto.PublicDivisionDTO
+	for _, division := range divisions {
+		dto := mapper.DivisionToPublicDTO(division)
+		responseDTOs = append(responseDTOs, dto)
+	}
+
+	response := mapper.CreatePaginatedResponse(responseDTOs, total, page, pageSize)
+
+	return &response, nil
+}

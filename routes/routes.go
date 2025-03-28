@@ -30,6 +30,12 @@ func RegisterRoute(r *gin.Engine, authController *controllers.AuthController) {
 			web.GET("/countries", func(ctx *gin.Context) {
 				views.CountryPublicList(ctx, authController)
 			})
+			web.GET("/countries/:country_id/divisions", func(ctx *gin.Context) {
+				views.DivisionPublicList(ctx, authController)
+			})
+			web.GET("/divisions/:division_id/districts", func(ctx *gin.Context) {
+				views.DistrictPublicList(ctx, authController)
+			})
 		}
 	}
 

@@ -301,3 +301,32 @@ func CountryPublicList(ctx *gin.Context, authContoller *controllers.AuthControll
 
 	ctx.JSON(http.StatusOK, response)
 }
+
+func DivisionPublicList(ctx *gin.Context, authContoller *controllers.AuthController) {
+	page, pageSize := GetPaginationParams(ctx)
+	countryID, err := strconv.ParseUint(ctx.Param("country_id"), 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid country ID"})
+		return
+	}
+
+	response, err := authContoller.GetDivisions(page, pageSize, int(countryID))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, response)
+}
+
+func DistrictPublicList(ctx *gin.Context, authContoller *controllers.AuthController) {
+	page, pageSize := GetPaginationParams(ctx)
+
+	response, err := authContoller.GetCountries(page, pageSize)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, response)
+}
