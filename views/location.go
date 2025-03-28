@@ -115,3 +115,28 @@ func CreateDivision(ctx *gin.Context, authContoller *controllers.AuthController)
 
 	ctx.JSON(http.StatusCreated, response)
 }
+
+func DivisionList(ctx *gin.Context, authContoller *controllers.AuthController) {
+	page, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("pageSize", "10"))
+	if page < 1 {
+		page = 1
+	}
+	if pageSize < 1 || pageSize > 100 {
+		pageSize = 10 // Set reasonable limits
+	}
+
+	response, total, err := authContoller.DivisionList(page, pageSize)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"total":    total,
+		"page":     page,
+		"pageSize": pageSize,
+		"data":     response,
+	})
+}

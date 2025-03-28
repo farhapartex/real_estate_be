@@ -48,5 +48,9 @@ func RegisterRoute(r *gin.Engine, authController *controllers.AuthController) {
 		protectedAPI.POST("/admin/divisions", func(ctx *gin.Context) {
 			views.CreateDivision(ctx, authController)
 		})
+
+		protectedAPI.GET("/admin/divisions", func(ctx *gin.Context) {
+			views.DivisionList(ctx, authController)
+		})
 	}
 }

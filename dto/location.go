@@ -19,6 +19,11 @@ type CountryResponseDTO struct {
 	Divisions int64  `json:"divisions"`
 }
 
+type CountryMinimalDTO struct {
+	ID   uint32 `json:"id"`
+	Name string `json:"name"`
+}
+
 type DivisionRequestDTO struct {
 	Name      string `json:"name"`
 	CountryId uint32 `json:"country_id"`
@@ -30,10 +35,10 @@ type DivisionUpdateRequestDTO struct {
 }
 
 type DivisionResponseDTO struct {
-	ID        uint32 `json:"id"`
-	Name      string `json:"name"`
-	Country   string `json:"country"`
-	CountryID uint32 `json:"country_id"`
-	Status    bool   `json:"status"`
-	Districts int64  `json:"districts"`
+	ID        uint32            `json:"id"`
+	Name      string            `json:"name"`
+	Country   CountryMinimalDTO `json:"country"`
+	CountryID uint32            `json:"country_id"`
+	Status    bool              `json:"status"`
+	Districts int64             `json:"districts"`
 }

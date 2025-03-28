@@ -168,3 +168,40 @@ func (c *AuthController) CreateDivision(request dto.DivisionRequestDTO) (*dto.Di
 
 	return &response, nil
 }
+
+func (c *AuthController) DivisionList(page, pageSize int) ([]dto.DivisionResponseDTO, int64, error) {
+	if c.DB == nil {
+		c.DB = config.DB
+	}
+
+	var divisions []models.Division
+	var total int64
+
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+	offset := (page - 1) * pageSize
+
+	result := c.DB.Preload("Country").Order("name ASC").Offset(offset).Limit(pageSize).Find(&divisions)
+	if result.Error != nil {
+		return nil, 0, errors.New("Failed to fetch divisions")
+	}
+
+	c.DB.Model(&models.Division{}).Count(&total)
+
+	var responseDTOs []dto.DivisionResponseDTO
+	for _, division := range divisions {
+		var districtCount int64
+		c.DB.Model(&models.District{}).Where("division_id = ?", division.ID).Count(&districtCount)
+
+		//countryInfo := fmt.Sprintf("{id: %d, name: %s}", division.Country.ID, division.Country.Name)
+		dto := mapper.DivisionModelToDTOMapper(division, "", districtCount)
+		responseDTOs = append(responseDTOs, dto)
+	}
+
+	return responseDTOs, total, nil
+
+}
