@@ -9,6 +9,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func GetPaginationParams(c *gin.Context) (int, int) {
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if err != nil || page <= 0 {
+		page = 1
+	}
+
+	pageSize, err := strconv.Atoi(c.DefaultQuery("page_size", "10"))
+	if err != nil || pageSize <= 0 || pageSize > 100 {
+		pageSize = 10
+	}
+
+	return page, pageSize
+}
+
 func CreateCountry(ctx *gin.Context, authContoller *controllers.AuthController) {
 	var request dto.CountryRequestDTO
 	err := ctx.ShouldBindJSON(&request)
@@ -274,4 +288,16 @@ func DistrictDelete(ctx *gin.Context, authContoller *controllers.AuthController)
 	}
 
 	ctx.JSON(http.StatusNoContent, nil)
+}
+
+func CountryPublicList(ctx *gin.Context, authContoller *controllers.AuthController) {
+	page, pageSize := GetPaginationParams(ctx)
+
+	response, err := authContoller.GetCountries(page, pageSize)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, response)
 }

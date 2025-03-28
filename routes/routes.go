@@ -24,6 +24,13 @@ func RegisterRoute(r *gin.Engine, authController *controllers.AuthController) {
 				views.SystemAdmin(ctx, authController)
 			})
 		}
+
+		web := publicApi.Group("/web")
+		{
+			web.GET("/countries", func(ctx *gin.Context) {
+				views.CountryPublicList(ctx, authController)
+			})
+		}
 	}
 
 	protectedAPI := r.Group("/api/v1")

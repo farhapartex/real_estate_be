@@ -66,3 +66,43 @@ func DistrictModelToDTOMapper(district models.District) dto.DistrictResponseDTO 
 		Status: district.Status,
 	}
 }
+
+func CountryToPublicDTO(country models.Country) dto.PublicCountryDTO {
+	return dto.PublicCountryDTO{
+		ID:   country.ID,
+		Name: country.Name,
+		Code: country.Code,
+	}
+}
+
+func DivisionToPublicDTO(division models.Division) dto.PublicDivisionDTO {
+	return dto.PublicDivisionDTO{
+		ID:      division.ID,
+		Name:    division.Name,
+		Country: CountryToPublicDTO(division.Country),
+	}
+}
+
+func DistrictToPublicDTO(district models.District) dto.PublicDistrictDTO {
+	return dto.PublicDistrictDTO{
+		ID:       district.ID,
+		Name:     district.Name,
+		Country:  CountryToPublicDTO(district.Country),
+		Division: DivisionToPublicDTO(district.Division),
+	}
+}
+
+func CreatePaginatedResponse(data interface{}, total int64, page, pageSize int) dto.PaginatedResponse {
+	totalPages := int(total) / pageSize
+	if int(total)%pageSize > 0 {
+		totalPages++
+	}
+
+	return dto.PaginatedResponse{
+		Data:       data,
+		Total:      total,
+		Page:       page,
+		PageSize:   pageSize,
+		TotalPages: totalPages,
+	}
+}

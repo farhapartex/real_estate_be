@@ -2,12 +2,28 @@ package controllers
 
 import (
 	"errors"
+	"strconv"
 
 	"github.com/farhapartex/real_estate_be/config"
 	"github.com/farhapartex/real_estate_be/dto"
 	"github.com/farhapartex/real_estate_be/mapper"
 	"github.com/farhapartex/real_estate_be/models"
+	"github.com/gin-gonic/gin"
 )
+
+func GetPaginationParams(c *gin.Context) (int, int) {
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if err != nil || page <= 0 {
+		page = 1
+	}
+
+	pageSize, err := strconv.Atoi(c.DefaultQuery("page_size", "10"))
+	if err != nil || pageSize <= 0 || pageSize > 100 {
+		pageSize = 10
+	}
+
+	return page, pageSize
+}
 
 func (c *AuthController) CreateCountry(request dto.CountryRequestDTO) (*dto.CountryResponseDTO, error) {
 	var country models.Country
@@ -424,4 +440,41 @@ func (c *AuthController) DeleteDistrict(id uint32) error {
 	}
 
 	return nil
+}
+
+func (pc *AuthController) GetCountries(page, pageSize int) (*dto.PaginatedResponse, error) {
+	// Ensure DB is initialized
+	if pc.DB == nil {
+		pc.DB = config.DB
+	}
+
+	offset := (page - 1) * pageSize
+
+	var countries []models.Country
+	var total int64
+
+	// Count total active records
+	pc.DB.Model(&models.Country{}).Where("status = ?", true).Count(&total)
+
+	// Get records with pagination
+	result := pc.DB.Where("status = ?", true).
+		Order("name ASC").
+		Offset(offset).
+		Limit(pageSize).
+		Find(&countries)
+
+	if result.Error != nil {
+		return nil, errors.New("Failed to fetch countries")
+	}
+
+	// Map models to DTOs
+	var responseDTOs []dto.PublicCountryDTO
+	for _, country := range countries {
+		dto := mapper.CountryToPublicDTO(country)
+		responseDTOs = append(responseDTOs, dto)
+	}
+
+	// Create paginated response
+	response := mapper.CreatePaginatedResponse(responseDTOs, total, page, pageSize)
+	return &response, nil
 }
