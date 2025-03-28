@@ -352,3 +352,76 @@ func (c *AuthController) DistrictList(page, pageSize int) ([]dto.DistrictRespons
 	return responseDTOs, total, nil
 
 }
+
+func (c *AuthController) UpdateDistrict(id uint32, request dto.DistrictUpdateRequestDTO) (*dto.DistrictResponseDTO, error) {
+	if c.DB == nil {
+		c.DB = config.DB
+	}
+	var district models.District
+
+	// Only fetch the division once, with preload
+	if err := c.DB.Preload("Country").Preload("Division").Preload("Division.Country").First(&district, id).Error; err != nil {
+		return nil, errors.New("District not found")
+	}
+
+	// Check if the country exists if it's being updated
+	var division models.Division
+	if request.DivisionId != district.DivisionId {
+		if err := c.DB.Preload("Country").First(&division, request.DivisionId).Error; err != nil {
+			return nil, errors.New("New division not found")
+		}
+	}
+
+	tx := c.DB.Begin()
+
+	err := tx.Exec("UPDATE districts SET division_id = ?, name = ?, status = ?, updated_at = NOW() WHERE id = ?",
+		request.DivisionId, request.Name, request.Status, id).Error
+
+	if err != nil {
+		tx.Rollback()
+		return nil, errors.New("Failed to update district")
+	}
+
+	err = tx.Commit().Error
+	if err != nil {
+		return nil, errors.New("Failed to update district")
+	}
+
+	// After update, fetch the division again with the updated country data
+	var updatedDistrict models.District
+	if err := c.DB.Preload("Division").Preload("Division.Country").First(&updatedDistrict, id).Error; err != nil {
+		return nil, errors.New("Failed to retrieve updated division")
+	}
+
+	c.DB.Preload("Country").First(&division, request.DivisionId)
+
+	updatedDistrict.Division = division
+	updatedDistrict.Country = division.Country
+
+	response := mapper.DistrictModelToDTOMapper(updatedDistrict)
+
+	return &response, nil
+}
+
+func (c *AuthController) DeleteDistrict(id uint32) error {
+	if c.DB == nil {
+		c.DB = config.DB
+	}
+	var district models.District
+
+	if err := c.DB.First(&district, id).Error; err != nil {
+		return errors.New("District not found")
+	}
+
+	tx := c.DB.Begin()
+	if err := tx.Delete(&district).Error; err != nil {
+		tx.Rollback()
+		return errors.New("Failed to delete District")
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return errors.New("Failed to delete District")
+	}
+
+	return nil
+}

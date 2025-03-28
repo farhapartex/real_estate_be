@@ -66,5 +66,11 @@ func RegisterRoute(r *gin.Engine, authController *controllers.AuthController) {
 		protectedAPI.GET("/admin/districts", func(ctx *gin.Context) {
 			views.DistrictList(ctx, authController)
 		})
+		protectedAPI.PATCH("/admin/districts/:id", func(ctx *gin.Context) {
+			views.DistrictUpdate(ctx, authController)
+		})
+		protectedAPI.DELETE("/admin/districts/:id", func(ctx *gin.Context) {
+			views.DistrictDelete(ctx, authController)
+		})
 	}
 }
