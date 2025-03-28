@@ -37,7 +37,6 @@ func DivisionModelToDTOMapper(division models.Division, countryInfo string, dist
 			ID:   division.Country.ID,
 			Name: division.Country.Name,
 		},
-		CountryID: division.CountryId,
 		Status:    division.Status,
 		Districts: districtCount,
 	}

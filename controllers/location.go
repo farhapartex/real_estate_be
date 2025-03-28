@@ -146,16 +146,18 @@ func (c *AuthController) DeleteCountry(id uint32) error {
 func (c *AuthController) CreateDivision(request dto.DivisionRequestDTO) (*dto.DivisionResponseDTO, error) {
 	var country models.Country
 
-	// find country with countryId
 	result := c.DB.First(&country, request.CountryId)
 	if result.RowsAffected == 0 {
 		return nil, errors.New("Country not found")
 	}
 
 	modelData := mapper.DivisionDtoToModelMapper(request)
+	modelData.Country = country
+
 	tx := c.DB.Begin()
 	err := tx.Create(&modelData).Error
 	if err != nil {
+		tx.Rollback()
 		return nil, errors.New("Division creation failed")
 	}
 
@@ -204,4 +206,94 @@ func (c *AuthController) DivisionList(page, pageSize int) ([]dto.DivisionRespons
 
 	return responseDTOs, total, nil
 
+}
+
+func (c *AuthController) UpdateDivision(id uint32, request dto.DivisionUpdateRequestDTO) (*dto.DivisionResponseDTO, error) {
+	if c.DB == nil {
+		c.DB = config.DB
+	}
+	var division models.Division
+
+	// Only fetch the division once, with preload
+	if err := c.DB.Preload("Country").First(&division, id).Error; err != nil {
+		return nil, errors.New("Division not found")
+	}
+
+	// Check if the country exists if it's being updated
+	if request.CountryID != division.CountryId {
+		var country models.Country
+		if err := c.DB.First(&country, request.CountryID).Error; err != nil {
+			return nil, errors.New("New country not found")
+		}
+	}
+
+	tx := c.DB.Begin()
+
+	// err := tx.Model(&division).Updates(map[string]interface{}{
+	// 	"country_id": request.CountryID,
+	// 	"name":       request.Name,
+	// 	"status":     request.Status,
+	// }).Error
+
+	err := tx.Exec("UPDATE divisions SET country_id = ?, name = ?, status = ?, updated_at = NOW() WHERE id = ?",
+		request.CountryID, request.Name, request.Status, id).Error
+
+	if err != nil {
+		tx.Rollback()
+		return nil, errors.New("Failed to update division")
+	}
+
+	err = tx.Commit().Error
+	if err != nil {
+		return nil, errors.New("Failed to update division")
+	}
+
+	// After update, fetch the division again with the updated country data
+	var updatedDivision models.Division
+	if err := c.DB.Preload("Country").First(&updatedDivision, id).Error; err != nil {
+		return nil, errors.New("Failed to retrieve updated division")
+	}
+
+	var districtCount int64
+	c.DB.Model(&models.District{}).Where("division_id = ?", division.ID).Count(&districtCount)
+
+	// Use the updated mapper function
+	response := dto.DivisionResponseDTO{
+		ID:        updatedDivision.ID,
+		Name:      updatedDivision.Name,
+		Country:   dto.CountryMinimalDTO{ID: updatedDivision.Country.ID, Name: updatedDivision.Country.Name},
+		Status:    updatedDivision.Status,
+		Districts: districtCount,
+	}
+
+	return &response, nil
+}
+
+func (c *AuthController) DeleteDivision(id uint32) error {
+	if c.DB == nil {
+		c.DB = config.DB
+	}
+	var division models.Division
+
+	if err := c.DB.First(&division, id).Error; err != nil {
+		return errors.New("Division not found")
+	}
+
+	var districtCount int64
+	c.DB.Model(&models.District{}).Where("division_id = ?", id).Count(&districtCount)
+	if districtCount > 0 {
+		return errors.New("Cannot delete division with associated districts")
+	}
+
+	tx := c.DB.Begin()
+	if err := tx.Delete(&division).Error; err != nil {
+		tx.Rollback()
+		return errors.New("Failed to delete division")
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return errors.New("Failed to delete division")
+	}
+
+	return nil
 }
