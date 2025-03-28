@@ -84,10 +84,8 @@ type PublicDivisionDTO struct {
 }
 
 type PublicDistrictDTO struct {
-	ID       uint32            `json:"id"`
-	Name     string            `json:"name"`
-	Country  PublicCountryDTO  `json:"country"`
-	Division PublicDivisionDTO `json:"division"`
+	ID   uint32 `json:"id"`
+	Name string `json:"name"`
 }
 
 // Response wrapper with pagination info

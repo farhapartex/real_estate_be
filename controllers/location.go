@@ -520,3 +520,48 @@ func (pc *AuthController) GetDivisions(page, pageSize, countryId int) (*dto.Pagi
 
 	return &response, nil
 }
+
+func (pc *AuthController) GetDistrictsByDivision(page, pageSize, divisionId int) (*dto.PaginatedResponse, error) {
+	// Ensure DB is initialized
+	if pc.DB == nil {
+		pc.DB = config.DB
+	}
+
+	// Check if division exists and is active
+	var division models.Division
+	if err := pc.DB.Where("id = ? AND status = ?", divisionId, true).First(&division).Error; err != nil {
+		return nil, errors.New("Division not found")
+	}
+	offset := (page - 1) * pageSize
+
+	var districts []models.District
+	var total int64
+
+	// Count total active records for this division
+	pc.DB.Model(&models.District{}).
+		Where("division_id = ? AND status = ?", divisionId, true).
+		Count(&total)
+
+	// Get records with pagination
+	result := pc.DB.Where("division_id = ? AND status = ?", divisionId, true).
+		Preload("Country").
+		Order("name ASC").
+		Offset(offset).
+		Limit(pageSize).
+		Find(&districts)
+
+	if result.Error != nil {
+		return nil, errors.New("Failed to fetch districts")
+	}
+
+	// Map models to DTOs
+	var responseDTOs []dto.PublicDistrictDTO
+	for _, district := range districts {
+		dto := mapper.DistrictToPublicDTO(district)
+		responseDTOs = append(responseDTOs, dto)
+	}
+
+	// Create paginated response
+	response := mapper.CreatePaginatedResponse(responseDTOs, total, page, pageSize)
+	return &response, nil
+}

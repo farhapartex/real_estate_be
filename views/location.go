@@ -321,8 +321,13 @@ func DivisionPublicList(ctx *gin.Context, authContoller *controllers.AuthControl
 
 func DistrictPublicList(ctx *gin.Context, authContoller *controllers.AuthController) {
 	page, pageSize := GetPaginationParams(ctx)
+	divisionId, err := strconv.ParseUint(ctx.Param("division_id"), 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid country ID"})
+		return
+	}
 
-	response, err := authContoller.GetCountries(page, pageSize)
+	response, err := authContoller.GetDistrictsByDivision(page, pageSize, int(divisionId))
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

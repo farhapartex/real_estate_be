@@ -85,10 +85,8 @@ func DivisionToPublicDTO(division models.Division) dto.PublicDivisionDTO {
 
 func DistrictToPublicDTO(district models.District) dto.PublicDistrictDTO {
 	return dto.PublicDistrictDTO{
-		ID:       district.ID,
-		Name:     district.Name,
-		Country:  CountryToPublicDTO(district.Country),
-		Division: DivisionToPublicDTO(district.Division),
+		ID:   district.ID,
+		Name: district.Name,
 	}
 }
 
