@@ -11,15 +11,12 @@ type LoginResponseDTO struct {
 	Token string `json:"token"`
 }
 
-type RegisterRequestDTO struct {
-	FirstName string `json:"first_name" binding:"required"`
-	LastName  string `json:"last_name" binding:"required"`
-	Email     string `json:"email" binding:"required"`
-	Password  string `json:"password" binding:"required"`
-}
-
 type RegisterResponseDTO struct {
 	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Email     string `json:"email"`
+	Role      string `json:"role"`
+	Status    string `json:"status"`
 }
 
 type UserDetailShortDTO struct {
@@ -37,4 +34,12 @@ type UserMeDTO struct {
 	LastLoginAt   *time.Time `json:"last_login_at,omitempty"`
 	EmailVerified bool       `json:"email_verified"`
 	Role          string     `json:"role"`
+}
+
+type OwnerSignupRequestDTO struct {
+	FirstName   string `json:"first_name" binding:"required,min=2,max=150"`
+	LastName    string `json:"last_name" binding:"required,min=2,max=150"`
+	Email       string `json:"email" binding:"required,email"`
+	Password    string `json:"password" binding:"required,min=8,max=72"`
+	PhoneNumber string `json:"phone_number" binding:"required,min=10,max=20"`
 }

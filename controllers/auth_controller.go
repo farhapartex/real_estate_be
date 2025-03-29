@@ -3,9 +3,11 @@ package controllers
 import (
 	"errors"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/farhapartex/real_estate_be/dto"
+	"github.com/farhapartex/real_estate_be/lib/email"
 	"github.com/farhapartex/real_estate_be/mapper"
 	"github.com/farhapartex/real_estate_be/models"
 	"github.com/farhapartex/real_estate_be/utils"
@@ -15,7 +17,8 @@ import (
 )
 
 type AuthController struct {
-	DB *gorm.DB
+	DB           *gorm.DB
+	EmailService *email.EmailService
 }
 
 func NewAuthController(db *gorm.DB) *AuthController {
@@ -53,8 +56,11 @@ func (c *AuthController) Login(request dto.LoginRequestDTO) (*dto.LoginResponseD
 	return &response, nil
 }
 
-func (c *AuthController) SignUp(request dto.RegisterRequestDTO) (*dto.RegisterResponseDTO, error) {
+func (c *AuthController) SignUp(request dto.OwnerSignupRequestDTO) (*dto.RegisterResponseDTO, error) {
+	request.Email = strings.ToLower(request.Email)
+
 	var existingUser models.User
+
 	result := c.DB.Where("email = ?", request.Email).First(&existingUser)
 	if result.RowsAffected > 0 {
 		return nil, errors.New("userExistsWithEmail")
@@ -66,7 +72,7 @@ func (c *AuthController) SignUp(request dto.RegisterRequestDTO) (*dto.RegisterRe
 		return nil, errors.New("passwordProcessError")
 	}
 
-	newUser := mapper.RegisterRequestToUserModel(request, string(hashedPassword))
+	newUser := mapper.OwnerSignupDTOToUserModel(request, string(hashedPassword))
 
 	// start DB Transaction
 	tx := c.DB.Begin()
@@ -81,6 +87,8 @@ func (c *AuthController) SignUp(request dto.RegisterRequestDTO) (*dto.RegisterRe
 	if err != nil {
 		return nil, errors.New("userRegistrationfailed")
 	}
+
+	go c.EmailService.SendVerificationEmail(newUser)
 
 	response := mapper.UserToRegistrationResponse(newUser)
 

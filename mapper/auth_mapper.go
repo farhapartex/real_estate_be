@@ -5,7 +5,7 @@ import (
 	"github.com/farhapartex/real_estate_be/models"
 )
 
-func RegisterRequestToUserModel(request dto.RegisterRequestDTO, hashedPassed string) models.User {
+func OwnerSignupDTOToUserModel(request dto.OwnerSignupRequestDTO, hashedPassed string) models.User {
 	return models.User{
 		FirstName:     request.FirstName,
 		LastName:      request.LastName,
@@ -36,6 +36,10 @@ func UserToLoginResponse(token string) dto.LoginResponseDTO {
 func UserToRegistrationResponse(user models.User) dto.RegisterResponseDTO {
 	return dto.RegisterResponseDTO{
 		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Email:     user.Email,
+		Role:      string(user.Role),
+		Status:    user.Status,
 	}
 }
 
