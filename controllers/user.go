@@ -9,15 +9,37 @@ import (
 	"gorm.io/gorm"
 )
 
-func (c *AuthController) GetSystemAllUsers(page, pageSize int) (*dto.PaginatedResponse, error) {
+func (c *AuthController) GetSystemAllUsers(page, pageSize int, filter dto.UserFilterDTO) (*dto.PaginatedResponse, error) {
 	offset := (page - 1) * pageSize
 
 	var users []models.User
 	var total int64
 
-	c.DB.Model(&models.User{}).Count(&total)
+	query := c.DB.Model(&models.User{})
 
-	result := c.DB.Order("first_name ASC").Offset(offset).Limit(pageSize).Find(&users)
+	if filter.Role != nil && *filter.Role != "" {
+		query = query.Where("role = ?", *filter.Role)
+	}
+
+	if filter.Status != nil && *filter.Status != "" {
+		query = query.Where("status = ?", *filter.Status)
+	}
+	if filter.EmailVerified != nil {
+		query = query.Where("email_verified = ?", *filter.EmailVerified)
+	}
+	if filter.Search != nil && *filter.Search != "" {
+		query = query.Where("first_name LIKE ? OR last_name LIKE ? OR email LIKE ?", "%"+*filter.Search+"%", "%"+*filter.Search+"%", "%"+*filter.Search+"%")
+	}
+
+	query.Count(&total)
+
+	sortField := filter.GetSortField()
+	sortOrder := filter.GetSortOrder()
+	result := query.Order(sortField + " " + sortOrder).
+		Offset(offset).
+		Limit(pageSize).
+		Find(&users)
+
 	if result.Error != nil {
 		return nil, result.Error
 	}

@@ -31,6 +31,7 @@ type UserDetailShortDTO struct {
 	JoinedAt      time.Time  `json:"joined_at"`
 	PhoneNumber   string     `json:"phone_number"`
 	Website       string     `json:"website"`
+	Status        string     `json:"status"`
 }
 
 type UserMeDTO struct {

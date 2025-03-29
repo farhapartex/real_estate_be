@@ -31,6 +31,7 @@ func UserToUserDetail(user models.User, profile models.OwnerProfile) dto.UserDet
 		EmailVerified: user.EmailVerified,
 		PhoneNumber:   profile.PhoneNumber,
 		Website:       profile.Website,
+		Status:        user.Status,
 	}
 }
 
