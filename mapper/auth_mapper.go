@@ -18,12 +18,19 @@ func OwnerSignupDTOToUserModel(request dto.OwnerSignupRequestDTO, hashedPassed s
 	}
 }
 
-func UserToUserDetail(user models.User) dto.UserDetailShortDTO {
+func UserToUserDetail(user models.User, profile models.OwnerProfile) dto.UserDetailShortDTO {
 	return dto.UserDetailShortDTO{
-		ID:        user.ID,
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-		Email:     user.Email,
+		ID:            user.ID,
+		FirstName:     user.FirstName,
+		LastName:      user.LastName,
+		Email:         user.Email,
+		Role:          string(user.Role),
+		IsSuperuser:   user.IsSuperuser,
+		JoinedAt:      user.JoinedAt,
+		LastLoginAt:   user.LastLoginAt,
+		EmailVerified: user.EmailVerified,
+		PhoneNumber:   profile.PhoneNumber,
+		Website:       profile.Website,
 	}
 }
 

@@ -20,10 +20,17 @@ type RegisterResponseDTO struct {
 }
 
 type UserDetailShortDTO struct {
-	ID        uint   `json:"id"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Email     string `json:"email"`
+	ID            uint       `json:"id"`
+	FirstName     string     `json:"first_name"`
+	LastName      string     `json:"last_name"`
+	Email         string     `json:"email"`
+	LastLoginAt   *time.Time `json:"last_login_at,omitempty"`
+	EmailVerified bool       `json:"email_verified"`
+	Role          string     `json:"role"`
+	IsSuperuser   bool       `json:"is_superuser"`
+	JoinedAt      time.Time  `json:"joined_at"`
+	PhoneNumber   string     `json:"phone_number"`
+	Website       string     `json:"website"`
 }
 
 type UserMeDTO struct {

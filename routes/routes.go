@@ -85,5 +85,9 @@ func RegisterRoute(r *gin.Engine, authController *controllers.AuthController) {
 		protectedAPI.DELETE("/admin/districts/:id", func(ctx *gin.Context) {
 			views.DistrictDelete(ctx, authController)
 		})
+
+		protectedAPI.GET("/admin/users", func(ctx *gin.Context) {
+			views.SystemAllUserListView(ctx, authController)
+		})
 	}
 }
