@@ -4,41 +4,25 @@ import (
 	"errors"
 
 	"github.com/farhapartex/real_estate_be/dto"
+	"github.com/farhapartex/real_estate_be/filters"
 	"github.com/farhapartex/real_estate_be/mapper"
 	"github.com/farhapartex/real_estate_be/models"
 	"gorm.io/gorm"
 )
 
-func (c *AuthController) GetSystemAllUsers(page, pageSize int, filter dto.UserFilterDTO) (*dto.PaginatedResponse, error) {
+func (c *AuthController) GetSystemAllUsers(page, pageSize int, filterDTO dto.UserFilterDTO) (*dto.PaginatedResponse, error) {
 	offset := (page - 1) * pageSize
 
 	var users []models.User
 	var total int64
 
+	filterManager := filters.NewUserFilterManager(filterDTO)
+
 	query := c.DB.Model(&models.User{})
-
-	if filter.Role != nil && *filter.Role != "" {
-		query = query.Where("role = ?", *filter.Role)
-	}
-
-	if filter.Status != nil && *filter.Status != "" {
-		query = query.Where("status = ?", *filter.Status)
-	}
-	if filter.EmailVerified != nil {
-		query = query.Where("email_verified = ?", *filter.EmailVerified)
-	}
-	if filter.Search != nil && *filter.Search != "" {
-		query = query.Where("first_name LIKE ? OR last_name LIKE ? OR email LIKE ?", "%"+*filter.Search+"%", "%"+*filter.Search+"%", "%"+*filter.Search+"%")
-	}
+	query = filterManager.Apply(query, filterDTO)
 
 	query.Count(&total)
-
-	sortField := filter.GetSortField()
-	sortOrder := filter.GetSortOrder()
-	result := query.Order(sortField + " " + sortOrder).
-		Offset(offset).
-		Limit(pageSize).
-		Find(&users)
+	result := query.Offset(offset).Limit(pageSize).Find(&users)
 
 	if result.Error != nil {
 		return nil, result.Error
