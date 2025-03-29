@@ -30,9 +30,9 @@ type OwnerProfile struct {
 	ID          uint      `gorm:"primaryKey;autoIncrement" json:"id"`
 	UserID      uint      `json:"user_id"`
 	User        User      `gorm:"foreignKey:UserID" json:"user"`
-	CompanyName string    `gorm:"size:255;default:null" json:"company_name"`
+	CompanyName *string   `gorm:"size:255;default:null" json:"company_name"`
 	PhoneNumber string    `gorm:"size:20;not null" json:"phone_number"`
-	Website     string    `gorm:"size:255;default:null" json:"website"`
+	Website     *string   `gorm:"size:255;default:null" json:"website"`
 	CreatedAt   time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt   time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
 }

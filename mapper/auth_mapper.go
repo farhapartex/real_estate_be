@@ -18,6 +18,16 @@ func OwnerSignupDTOToUserModel(request dto.OwnerSignupRequestDTO, hashedPassed s
 	}
 }
 
+func OwnerSignupDTOToProfileModel(request dto.OwnerSignupRequestDTO, userID uint) models.OwnerProfile {
+
+	return models.OwnerProfile{
+		UserID:      userID,
+		PhoneNumber: request.PhoneNumber,
+		CompanyName: nil,
+		Website:     nil,
+	}
+}
+
 func UserToUserDetail(user models.User, profile models.OwnerProfile) dto.UserDetailShortDTO {
 	return dto.UserDetailShortDTO{
 		ID:            user.ID,

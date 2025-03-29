@@ -83,6 +83,13 @@ func (c *AuthController) SignUp(request dto.OwnerSignupRequestDTO) (*dto.Registe
 		return nil, errors.New("userRegistrationfailed")
 	}
 
+	ownerProfile := mapper.OwnerSignupDTOToProfileModel(request, newUser.ID)
+	err = tx.Create(&ownerProfile).Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errors.New("profileCreationFailed")
+	}
+
 	err = tx.Commit().Error
 	if err != nil {
 		return nil, errors.New("userRegistrationfailed")

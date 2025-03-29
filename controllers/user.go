@@ -46,9 +46,9 @@ func (c *AuthController) GetSystemAllUsers(page, pageSize int, filterDTO dto.Use
 		if !profileFound {
 			profile = models.OwnerProfile{
 				UserID:      user.ID,
-				CompanyName: "",
+				CompanyName: nil,
 				PhoneNumber: "",
-				Website:     "",
+				Website:     nil,
 				CreatedAt:   user.JoinedAt,
 				UpdatedAt:   user.JoinedAt,
 			}
