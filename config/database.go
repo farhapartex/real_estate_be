@@ -44,6 +44,7 @@ func MigrateDB() {
 
 	dbModels := []interface{}{
 		&models.User{},
+		&models.VerificationToken{},
 		&models.OwnerProfile{},
 		&models.Country{},
 		&models.Division{},

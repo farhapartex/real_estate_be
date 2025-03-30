@@ -5,6 +5,7 @@ import (
 
 	"github.com/farhapartex/real_estate_be/controllers"
 	"github.com/farhapartex/real_estate_be/dto"
+	"github.com/farhapartex/real_estate_be/mapper"
 	"github.com/gin-gonic/gin"
 )
 
@@ -58,6 +59,25 @@ func SignIn(c *gin.Context, authController *controllers.AuthController) {
 	}
 
 	c.JSON(http.StatusOK, response)
+
+}
+
+func VerifyAccount(c *gin.Context, authController *controllers.AuthController) {
+	var request dto.VerifyAccountRequest
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, mapper.ToVerifyAccountResponse(false, "Invalid request"))
+		return
+	}
+
+	success, response, err := authController.VerifyAccount(request.Token)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, mapper.ToVerifyAccountResponse(false, "Internal server error"))
+		return
+	}
+
+	c.JSON(http.StatusOK, mapper.ToVerifyAccountResponse(success, response))
 
 }
 

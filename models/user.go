@@ -28,6 +28,7 @@ type User struct {
 	Status            string     `gorm:"size:20;default:active;check:status IN ('active', 'inactive', 'suspended')" json:"status"`
 	EmailVerified     bool       `gorm:"default:false" json:"email_verified"`
 	Role              Role       `grom:"type:varchar(20);not null;" json:"role"`
+	VerifiedAt        *time.Time `json:"verified_at"`
 }
 
 type OwnerProfile struct {
