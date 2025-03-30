@@ -72,3 +72,18 @@ func UserToMeResponse(user models.User) dto.UserMeDTO {
 		Role:          string(user.Role),
 	}
 }
+
+func ToVerifyAccountResponse(success bool, message string) dto.VerifyAccountResponse {
+	return dto.VerifyAccountResponse{
+		Success: success,
+		Message: message,
+	}
+}
+
+// ToResendVerificationResponse converts resend verification result to a ResendVerificationResponse
+func ToResendVerificationResponse(success bool, message string) dto.ResendVerificationResponse {
+	return dto.ResendVerificationResponse{
+		Success: success,
+		Message: message,
+	}
+}

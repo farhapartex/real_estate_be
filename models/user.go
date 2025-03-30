@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Role string
 
@@ -35,4 +39,30 @@ type OwnerProfile struct {
 	Website     *string   `gorm:"size:255;default:null" json:"website"`
 	CreatedAt   time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt   time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
+}
+
+type VerificationToken struct {
+	gorm.Model
+	UserID    uint       `gorm:"not null" json:"user_id"`
+	User      User       `gorm:"foreignKey:UserID" json:"user"`
+	Token     string     `gorm:"uniqueIndex;not null" json:"token"`
+	Type      string     `gorm:"not null" json:"type"`
+	ExpiresAt time.Time  `gorm:"not null" json:"expire_at"`
+	UsedAt    *time.Time `json:"used_at"`
+}
+
+// IsExpired checks if the verification token has expired
+func (vt *VerificationToken) IsExpired() bool {
+	return time.Now().After(vt.ExpiresAt)
+}
+
+// IsUsed checks if the verification token has been used
+func (vt *VerificationToken) IsUsed() bool {
+	return vt.UsedAt != nil
+}
+
+// MarkAsUsed marks the token as used
+func (vt *VerificationToken) MarkAsUsed() {
+	now := time.Now()
+	vt.UsedAt = &now
 }

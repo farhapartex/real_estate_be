@@ -51,3 +51,21 @@ type OwnerSignupRequestDTO struct {
 	Password    string `json:"password" binding:"required,min=8,max=72"`
 	PhoneNumber string `json:"phone_number" binding:"required,min=10,max=20"`
 }
+
+type VerifyAccountRequest struct {
+	Token string `json:"token" binding:"required"`
+}
+
+type VerifyAccountResponse struct {
+	Success bool   `json:"success"`
+	Message string `json:"message"`
+}
+
+type ResendVerificationRequest struct {
+	Email string `json:"email" binding:"required,email"`
+}
+
+type ResendVerificationResponse struct {
+	Success bool   `json:"success"`
+	Message string `json:"message"`
+}
