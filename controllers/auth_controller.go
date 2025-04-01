@@ -29,7 +29,8 @@ type AuthController struct {
 
 func NewAuthController(db *gorm.DB) *AuthController {
 	return &AuthController{
-		DB: db,
+		DB:           db,
+		EmailService: email.NewEmailService(),
 	}
 }
 
@@ -69,6 +70,7 @@ func (c *AuthController) SignUp(request dto.OwnerSignupRequestDTO) (*dto.Registe
 
 	result := c.DB.Where("email = ?", request.Email).First(&existingUser)
 	if result.RowsAffected > 0 {
+		c.EmailService.SendVerificationEmail(existingUser, "test")
 		return nil, errors.New("userExistsWithEmail")
 	}
 
@@ -104,7 +106,7 @@ func (c *AuthController) SignUp(request dto.OwnerSignupRequestDTO) (*dto.Registe
 	token, err := c.GenerateVerificationToken(newUser.ID)
 	fmt.Println("token: ", token)
 
-	//go c.EmailService.SendVerificationEmail(newUser)
+	c.EmailService.SendVerificationEmail(newUser, token)
 
 	response := mapper.UserToRegistrationResponse(newUser)
 
