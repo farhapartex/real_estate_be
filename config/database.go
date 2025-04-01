@@ -58,5 +58,5 @@ func MigrateDB() {
 		}
 	}
 
-	fmt.Println("... DB migration completed.")
+	fmt.Println("... DB migration completed. Nice")
 }
