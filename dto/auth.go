@@ -17,6 +17,7 @@ type RegisterResponseDTO struct {
 	Email     string `json:"email"`
 	Role      string `json:"role"`
 	Status    string `json:"status"`
+	Token     string `json:"token"`
 }
 
 type UserDetailShortDTO struct {

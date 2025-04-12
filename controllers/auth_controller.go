@@ -13,7 +13,6 @@ import (
 
 	"github.com/farhapartex/real_estate_be/config"
 	"github.com/farhapartex/real_estate_be/dto"
-	"github.com/farhapartex/real_estate_be/lib/email"
 	"github.com/farhapartex/real_estate_be/mapper"
 	"github.com/farhapartex/real_estate_be/models"
 	"github.com/farhapartex/real_estate_be/utils"
@@ -23,14 +22,12 @@ import (
 )
 
 type AuthController struct {
-	DB           *gorm.DB
-	EmailService *email.EmailService
+	DB *gorm.DB
 }
 
 func NewAuthController(db *gorm.DB) *AuthController {
 	return &AuthController{
-		DB:           db,
-		EmailService: email.NewEmailService(),
+		DB: db,
 	}
 }
 
@@ -70,7 +67,6 @@ func (c *AuthController) SignUp(request dto.OwnerSignupRequestDTO) (*dto.Registe
 
 	result := c.DB.Where("email = ?", request.Email).First(&existingUser)
 	if result.RowsAffected > 0 {
-		c.EmailService.SendVerificationEmail(existingUser, "test")
 		return nil, errors.New("userExistsWithEmail")
 	}
 
@@ -106,9 +102,7 @@ func (c *AuthController) SignUp(request dto.OwnerSignupRequestDTO) (*dto.Registe
 	token, err := c.GenerateVerificationToken(newUser.ID)
 	fmt.Println("token: ", token)
 
-	c.EmailService.SendVerificationEmail(newUser, token)
-
-	response := mapper.UserToRegistrationResponse(newUser)
+	response := mapper.UserToRegistrationResponse(newUser, token)
 
 	return &response, nil
 }

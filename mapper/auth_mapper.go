@@ -51,13 +51,14 @@ func UserToLoginResponse(token string) dto.LoginResponseDTO {
 	}
 }
 
-func UserToRegistrationResponse(user models.User) dto.RegisterResponseDTO {
+func UserToRegistrationResponse(user models.User, token string) dto.RegisterResponseDTO {
 	return dto.RegisterResponseDTO{
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
 		Email:     user.Email,
 		Role:      string(user.Role),
 		Status:    user.Status,
+		Token:     token,
 	}
 }
 
