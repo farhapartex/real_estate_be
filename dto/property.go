@@ -36,14 +36,26 @@ type PropertyResponseDTO struct {
 	UpdatedAt    string              `json:"updated_at"`
 }
 
+type PropertyListDTO struct {
+	ID           uint32                     `json:"id"`
+	Title        string                     `json:"title"`
+	Purpose      string                     `json:"purpose"`
+	Price        float64                    `json:"price"`
+	PropertyType string                     `json:"property_type"`
+	Country      CountryMinimalDTO          `json:"country"`
+	Division     DivisionMinimal2DTO        `json:"division"`
+	District     DistrictMinimalResponseDTO `json:"district"`
+}
+
 type PropertyListResponseDTO struct {
-	Properties []PropertyResponseDTO `json:"properties"`
-	Total      int64                 `json:"total"`
-	Page       int                   `json:"page"`
-	PerPage    int                   `json:"per_page"`
+	Properties []PropertyListDTO `json:"properties"`
+	Total      int64             `json:"total"`
+	Page       int               `json:"page"`
+	PerPage    int               `json:"per_page"`
 }
 
 type PropertyFilterDTO struct {
+	OwerID       uint    `form:"owner_id"`
 	Purpose      string  `form:"purpose"`
 	MinPrice     float64 `form:"min_price"`
 	MaxPrice     float64 `form:"max_price"`

@@ -1,6 +1,10 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type PropertyString string
 
@@ -40,8 +44,8 @@ type Property struct {
 
 	Address string `gorm:"type:varchar(255);not null" json:"address"`
 
-	Description  string `gorm:"type:text;not null" json:"description"`
-	ApprovedAt   string `json:"approved_at"`
-	ApprovedByID uint   `json:"approved_by_id"`
-	ApprovedBy   User   `gorm:"foreignKey:ApprovedByID" json:"approved_by"`
+	Description  string     `gorm:"type:text;not null" json:"description"`
+	ApprovedAt   *time.Time `json:"approved_at"`
+	ApprovedByID *uint      `json:"approved_by_id"`
+	ApprovedBy   *User      `gorm:"foreignKey:ApprovedByID" json:"approved_by"`
 }

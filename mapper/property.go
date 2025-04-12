@@ -1,8 +1,6 @@
 package mapper
 
 import (
-	"time"
-
 	"github.com/farhapartex/real_estate_be/dto"
 	"github.com/farhapartex/real_estate_be/models"
 )
@@ -27,49 +25,39 @@ func PropertyDtoToModelMapper(request dto.PropertyRequestDTO, userID uint) model
 	}
 }
 
-func PropertyModelToResponseDTOMapper(property models.Property) dto.PropertyResponseDTO {
-	return dto.PropertyResponseDTO{
+func PropertyModelToResponseDTOMapper(property models.Property) dto.PropertyListDTO {
+	return dto.PropertyListDTO{
 		ID:           uint32(property.ID),
 		Title:        property.Title,
 		Purpose:      string(property.Purpose),
 		Price:        property.Price,
-		Status:       string(property.Status),
 		PropertyType: property.PropertyType,
-		BedRooms:     property.Bedrooms,
-		BathRooms:    property.Bathrooms,
-		Size:         property.Size,
-		BuiltYear:    property.BuiltYear,
-		Country: dto.CountryResponseDTO{
+		Country: dto.CountryMinimalDTO{
 			ID:   uint32(property.Country.ID),
 			Name: property.Country.Name,
-			Code: property.Country.Code,
 		},
-		Division: dto.DivisionResponseDTO{
+		Division: dto.DivisionMinimal2DTO{
 			ID:   uint32(property.Division.ID),
 			Name: property.Division.Name,
 		},
-		District: dto.DistrictResponseDTO{
+		District: dto.DistrictMinimalResponseDTO{
 			ID:   uint32(property.District.ID),
 			Name: property.District.Name,
 		},
-		Address:     property.Address,
-		Description: property.Description,
-		CreatedAt:   property.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:   property.UpdatedAt.Format(time.RFC3339),
 	}
 }
 
-func PropertyListToResponseDTOMapper(properties []models.Property, total int64, page, perPage int) dto.PropertyListResponseDTO {
-	propertyDTOs := make([]dto.PropertyResponseDTO, len(properties))
+// func PropertyListToResponseDTOMapper(properties []models.Property, total int64, page, perPage int) dto.PropertyListResponseDTO {
+// 	propertyDTOs := make([]dto.PropertyResponseDTO, len(properties))
 
-	for i, property := range properties {
-		propertyDTOs[i] = PropertyModelToResponseDTOMapper(property)
-	}
+// 	for i, property := range properties {
+// 		propertyDTOs[i] = PropertyListDTO(property)
+// 	}
 
-	return dto.PropertyListResponseDTO{
-		Properties: propertyDTOs,
-		Total:      total,
-		Page:       page,
-		PerPage:    perPage,
-	}
-}
+// 	return dto.PropertyListResponseDTO{
+// 		Properties: propertyDTOs,
+// 		Total:      total,
+// 		Page:       page,
+// 		PerPage:    perPage,
+// 	}
+// }

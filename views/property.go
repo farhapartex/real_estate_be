@@ -6,10 +6,19 @@ import (
 
 	"github.com/farhapartex/real_estate_be/controllers"
 	"github.com/farhapartex/real_estate_be/dto"
+	"github.com/farhapartex/real_estate_be/models"
 	"github.com/gin-gonic/gin"
 )
 
 func PropertieList(ctx *gin.Context, authContoller *controllers.AuthController) {
+	user, exists := ctx.Get("user")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	userID := uint(user.(models.User).ID)
+
 	page, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
 	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("pageSize", "10"))
 	if page < 1 {
@@ -20,6 +29,7 @@ func PropertieList(ctx *gin.Context, authContoller *controllers.AuthController) 
 	}
 
 	filters := dto.PropertyFilterDTO{
+		OwerID:  userID,
 		Page:    page,
 		PerPage: pageSize,
 	}
@@ -32,4 +42,30 @@ func PropertieList(ctx *gin.Context, authContoller *controllers.AuthController) 
 	}
 
 	ctx.JSON(http.StatusOK, response)
+}
+
+func CreateProperty(ctx *gin.Context, authContoller *controllers.AuthController) {
+	// Get the authenticated user
+	user, exists := ctx.Get("user")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	userID := uint(user.(models.User).ID)
+
+	var request dto.PropertyRequestDTO
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid data", "details": err.Error()})
+		return
+	}
+
+	// Create property
+	response, err := authContoller.CreateProperty(request, userID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, response)
 }

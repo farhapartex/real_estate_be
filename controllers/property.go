@@ -15,6 +15,8 @@ func (c *AuthController) GetProperties(filter dto.PropertyFilterDTO) (*dto.Pagin
 	// Build query with filters
 	query := c.DB.Model(&models.Property{})
 
+	query = query.Where("owner_id = ?", filter.OwerID)
+
 	// Apply filters
 	if filter.Purpose != "" {
 		query = query.Where("purpose = ?", filter.Purpose)
@@ -84,7 +86,7 @@ func (c *AuthController) GetProperties(filter dto.PropertyFilterDTO) (*dto.Pagin
 		return nil, errors.New("error retrieving properties")
 	}
 
-	var responseDTOs []dto.PropertyResponseDTO
+	var responseDTOs []dto.PropertyListDTO
 	for _, property := range properties {
 		dto := mapper.PropertyModelToResponseDTOMapper(property)
 		responseDTOs = append(responseDTOs, dto)
@@ -92,5 +94,46 @@ func (c *AuthController) GetProperties(filter dto.PropertyFilterDTO) (*dto.Pagin
 
 	response := mapper.CreatePaginatedResponse(responseDTOs, total, filter.Page, filter.PerPage)
 
+	return &response, nil
+}
+
+func (c *AuthController) CreateProperty(request dto.PropertyRequestDTO, userID uint) (*dto.PropertyListDTO, error) {
+	// Verify that country, division, and district exist
+	var country models.Country
+	var division models.Division
+	var district models.District
+
+	if err := c.DB.First(&country, request.CountryID).Error; err != nil {
+		return nil, errors.New("country not found")
+	}
+
+	if err := c.DB.First(&division, request.DivisionID).Error; err != nil {
+		return nil, errors.New("division not found")
+	}
+
+	if err := c.DB.First(&district, request.DistrictID).Error; err != nil {
+		return nil, errors.New("district not found")
+	}
+
+	// Create new property
+	newProperty := mapper.PropertyDtoToModelMapper(request, userID)
+
+	tx := c.DB.Begin()
+	if err := tx.Create(&newProperty).Error; err != nil {
+		tx.Rollback()
+		return nil, errors.New("property creation failed: " + err.Error())
+	}
+
+	// Fetch the created property with all relationships to build the response
+	if err := tx.Preload("Country").Preload("Division").Preload("District").Preload("Owner").First(&newProperty, newProperty.ID).Error; err != nil {
+		tx.Rollback()
+		return nil, errors.New("error retrieving created property")
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return nil, errors.New("property creation failed during commit")
+	}
+
+	response := mapper.PropertyModelToResponseDTOMapper(newProperty)
 	return &response, nil
 }
