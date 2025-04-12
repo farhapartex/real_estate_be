@@ -49,6 +49,7 @@ func MigrateDB() {
 		&models.Country{},
 		&models.Division{},
 		&models.District{},
+		&models.Property{},
 	}
 
 	for _, model := range dbModels {
