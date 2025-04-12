@@ -57,4 +57,5 @@ type PropertyFilterDTO struct {
 	DistrictID   uint32  `form:"district_id"`
 	Page         int     `form:"page,default=1"`
 	PerPage      int     `form:"per_page,default=10"`
+	Status       string  `form:"status"`
 }

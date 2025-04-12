@@ -89,5 +89,10 @@ func RegisterRoute(r *gin.Engine, authController *controllers.AuthController) {
 		protectedAPI.GET("/admin/users", func(ctx *gin.Context) {
 			views.SystemAllUserListView(ctx, authController)
 		})
+
+		// owners
+		protectedAPI.GET("/owner/properties", func(ctx *gin.Context) {
+			views.PropertieList(ctx, authController)
+		})
 	}
 }
