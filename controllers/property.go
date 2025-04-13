@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/farhapartex/real_estate_be/dto"
 	"github.com/farhapartex/real_estate_be/mapper"
@@ -63,6 +64,7 @@ func (c *AuthController) GetProperties(filter dto.PropertyFilterDTO) (*dto.Pagin
 	}
 
 	if filter.Status != "" {
+		fmt.Println("Status filter applied:", filter.Status)
 		query = query.Where("status = ?", filter.Status)
 	}
 
@@ -88,6 +90,7 @@ func (c *AuthController) GetProperties(filter dto.PropertyFilterDTO) (*dto.Pagin
 
 	var responseDTOs []dto.PropertyListDTO
 	for _, property := range properties {
+		fmt.Print("Status:", property.Status)
 		dto := mapper.PropertyModelToResponseDTOMapper(property)
 		responseDTOs = append(responseDTOs, dto)
 	}

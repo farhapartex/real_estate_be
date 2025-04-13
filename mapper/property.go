@@ -44,20 +44,10 @@ func PropertyModelToResponseDTOMapper(property models.Property) dto.PropertyList
 			ID:   uint32(property.District.ID),
 			Name: property.District.Name,
 		},
+		Status:    string(property.Status),
+		Address:   property.Address,
+		CreatedAt: property.CreatedAt.Format("2006-01-02 15:04:05"),
+		Views:     0,
+		Inquiries: 0,
 	}
 }
-
-// func PropertyListToResponseDTOMapper(properties []models.Property, total int64, page, perPage int) dto.PropertyListResponseDTO {
-// 	propertyDTOs := make([]dto.PropertyResponseDTO, len(properties))
-
-// 	for i, property := range properties {
-// 		propertyDTOs[i] = PropertyListDTO(property)
-// 	}
-
-// 	return dto.PropertyListResponseDTO{
-// 		Properties: propertyDTOs,
-// 		Total:      total,
-// 		Page:       page,
-// 		PerPage:    perPage,
-// 	}
-// }

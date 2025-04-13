@@ -45,6 +45,11 @@ type PropertyListDTO struct {
 	Country      CountryMinimalDTO          `json:"country"`
 	Division     DivisionMinimal2DTO        `json:"division"`
 	District     DistrictMinimalResponseDTO `json:"district"`
+	Status       string                     `json:"status"`
+	Address      string                     `json:"address"`
+	Views        int                        `json:"views"`
+	Inquiries    int                        `json:"inquiries"`
+	CreatedAt    string                     `json:"created_at"`
 }
 
 type PropertyListResponseDTO struct {
