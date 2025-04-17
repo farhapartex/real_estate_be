@@ -140,3 +140,15 @@ func (c *AuthController) CreateProperty(request dto.PropertyRequestDTO, userID u
 	response := mapper.PropertyModelToResponseDTOMapper(newProperty)
 	return &response, nil
 }
+
+func (c *AuthController) PropertyDetails(propertyId uint32, userId uint) (*dto.PropertyResponseDTO, error) {
+	var property models.Property
+
+	if err := c.DB.Where("owner_id = ? AND id = ?", userId, propertyId).First(&property).Error; err != nil {
+		return nil, errors.New("Property not found")
+	}
+
+	response := mapper.PropertyModelToDetailsResponseDTOMapper(property)
+
+	return &response, nil
+}

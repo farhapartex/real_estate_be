@@ -45,7 +45,6 @@ func PropertieList(ctx *gin.Context, authContoller *controllers.AuthController) 
 }
 
 func CreateProperty(ctx *gin.Context, authContoller *controllers.AuthController) {
-	// Get the authenticated user
 	user, exists := ctx.Get("user")
 	if !exists {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
@@ -60,7 +59,6 @@ func CreateProperty(ctx *gin.Context, authContoller *controllers.AuthController)
 		return
 	}
 
-	// Create property
 	response, err := authContoller.CreateProperty(request, userID)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -68,4 +66,24 @@ func CreateProperty(ctx *gin.Context, authContoller *controllers.AuthController)
 	}
 
 	ctx.JSON(http.StatusCreated, response)
+}
+
+func PropertyDetails(ctx *gin.Context, authContoller *controllers.AuthController) {
+	idParam := ctx.Param("id")
+	propertyId, err := strconv.ParseUint(idParam, 10, 32)
+	user, exists := ctx.Get("user")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	userID := uint(user.(models.User).ID)
+
+	response, err := authContoller.PropertyDetails(uint32(propertyId), userID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, response)
 }

@@ -17,23 +17,23 @@ type PropertyRequestDTO struct {
 }
 
 type PropertyResponseDTO struct {
-	ID           uint32              `json:"id"`
-	Title        string              `json:"title"`
-	Purpose      string              `json:"purpose"`
-	Price        float64             `json:"price"`
-	Status       string              `json:"status"`
-	PropertyType string              `json:"property_type"`
-	BedRooms     int                 `json:"bedrooms"`
-	BathRooms    int                 `json:"bathrooms"`
-	Size         float64             `json:"size"`
-	BuiltYear    int                 `json:"built_year"`
-	Country      CountryResponseDTO  `json:"country"`
-	Division     DivisionResponseDTO `json:"division"`
-	District     DistrictResponseDTO `json:"district"`
-	Address      string              `json:"address"`
-	Description  string              `json:"description"`
-	CreatedAt    string              `json:"created_at"`
-	UpdatedAt    string              `json:"updated_at"`
+	ID           uint32  `json:"id"`
+	Title        string  `json:"title"`
+	Purpose      string  `json:"purpose"`
+	Price        float64 `json:"price"`
+	Status       string  `json:"status"`
+	PropertyType string  `json:"property_type"`
+	BedRooms     int     `json:"bedrooms"`
+	BathRooms    int     `json:"bathrooms"`
+	Size         float64 `json:"size"`
+	BuiltYear    int     `json:"built_year"`
+	Country      uint32  `json:"country_id"`
+	Division     uint32  `json:"division_id"`
+	District     uint32  `json:"district_id"`
+	Address      string  `json:"address"`
+	Description  string  `json:"description"`
+	CreatedAt    string  `json:"created_at"`
+	UpdatedAt    string  `json:"updated_at"`
 }
 
 type PropertyListDTO struct {

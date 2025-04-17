@@ -51,3 +51,24 @@ func PropertyModelToResponseDTOMapper(property models.Property) dto.PropertyList
 		Inquiries: 0,
 	}
 }
+
+func PropertyModelToDetailsResponseDTOMapper(property models.Property) dto.PropertyResponseDTO {
+	return dto.PropertyResponseDTO{
+		ID:           uint32(property.ID),
+		Title:        property.Title,
+		Purpose:      string(property.Purpose),
+		Price:        property.Price,
+		PropertyType: property.PropertyType,
+		Country:      uint32(property.Country.ID),
+		Division:     uint32(property.Division.ID),
+		District:     uint32(property.District.ID),
+		Status:       string(property.Status),
+		Address:      property.Address,
+		CreatedAt:    property.CreatedAt.Format("2006-01-02 15:04:05"),
+		Description:  property.Description,
+		BedRooms:     property.Bedrooms,
+		BathRooms:    property.Bathrooms,
+		Size:         property.Size,
+		BuiltYear:    property.BuiltYear,
+	}
+}
