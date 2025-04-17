@@ -27,9 +27,9 @@ type PropertyResponseDTO struct {
 	BathRooms    int     `json:"bathrooms"`
 	Size         float64 `json:"size"`
 	BuiltYear    int     `json:"built_year"`
-	Country      uint32  `json:"country_id"`
-	Division     uint32  `json:"division_id"`
-	District     uint32  `json:"district_id"`
+	CountryID    uint32  `json:"country_id"`
+	DivisionID   uint32  `json:"division_id"`
+	DistrictID   uint32  `json:"district_id"`
 	Address      string  `json:"address"`
 	Description  string  `json:"description"`
 	CreatedAt    string  `json:"created_at"`
