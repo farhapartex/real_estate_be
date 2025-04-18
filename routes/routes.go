@@ -106,5 +106,13 @@ func RegisterRoute(r *gin.Engine, authController *controllers.AuthController) {
 		protectedAPI.POST("/owner/properties/:id/features", func(ctx *gin.Context) {
 			views.CreatePropertyFeature(ctx, authController)
 		})
+
+		protectedAPI.GET("/owner/properties/:id/features", func(ctx *gin.Context) {
+			views.PropertyFeatureDetails(ctx, authController)
+		})
+
+		protectedAPI.DELETE("/owner/properties/:id/features", func(ctx *gin.Context) {
+			views.DeletePropertyFeature(ctx, authController)
+		})
 	}
 }

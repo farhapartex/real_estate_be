@@ -200,3 +200,35 @@ func (c *AuthController) CreatePropertyFeature(request dto.PropertyFeatureDTO, u
 	response := mapper.PropertyFeatureModelToDTO(newPropFeature)
 	return &response, nil
 }
+
+func (c *AuthController) PropertyFeatureDetails(propertyId uint32, userID uint) (*dto.PropertyFeatureDetailsDTO, error) {
+	var propFeature models.PropertyFeature
+
+	if err := c.DB.Where("property_id = ?", propertyId).First(&propFeature).Error; err != nil {
+		return nil, errors.New("Property feature not found")
+	}
+
+	response := mapper.PropertyFeatureModelToDTO(propFeature)
+
+	return &response, nil
+}
+
+func (c *AuthController) DeletePropertyFeature(propertyId uint32, userID uint) error {
+	var propFeature models.PropertyFeature
+
+	if err := c.DB.Where("property_id = ?", propertyId).First(&propFeature).Error; err != nil {
+		return errors.New("Property feature not found")
+	}
+
+	tx := c.DB.Begin()
+	if err := tx.Delete(&propFeature).Error; err != nil {
+		tx.Rollback()
+		return errors.New("Failed to delete property feature")
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return errors.New("Failed to delete property feature")
+	}
+
+	return nil
+}

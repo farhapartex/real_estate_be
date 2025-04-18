@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/lib/pq"
@@ -132,14 +133,113 @@ type EnergyFeature struct {
 
 type PropertyFeature struct {
 	gorm.Model
-	PropertyID        uint              `json:"property_id"`
-	Property          Property          `gorm:"foreignKey:PropertyID" json:"property"`
-	Features          pq.StringArray    `gorm:"type:text[]" json:"features"`
-	Amenities         Amenities         `gorm:"type:jsonb" json:"amenities"`
-	SecurityFeature   SecurityFeature   `gorm:"type:jsonb" json:"securityFeature"`
-	TechnologyFeature TechnologyFeature `gorm:"type:jsonb" json:"technologyFeature"`
-	LuxuryFeature     LuxuryFeature     `gorm:"type:jsonb" json:"luxuryFeature"`
-	CommunityFeature  CommunityFeature  `gorm:"type:jsonb" json:"communityFeature"`
-	UtilsFeature      UtilsFeature      `gorm:"type:jsonb" json:"utilsFeature"`
-	EnergyFeature     EnergyFeature     `gorm:"type:jsonb" json:"energyFeature"`
+	PropertyID        uint           `json:"property_id"`
+	Property          Property       `gorm:"foreignKey:PropertyID" json:"property"`
+	Features          pq.StringArray `gorm:"type:text[]" json:"features"`
+	Amenities         []byte         `gorm:"type:jsonb" json:"-"`
+	SecurityFeature   []byte         `gorm:"type:jsonb" json:"-"`
+	TechnologyFeature []byte         `gorm:"type:jsonb" json:"-"`
+	LuxuryFeature     []byte         `gorm:"type:jsonb" json:"-"`
+	CommunityFeature  []byte         `gorm:"type:jsonb" json:"-"`
+	UtilsFeature      []byte         `gorm:"type:jsonb" json:"-"`
+	EnergyFeature     []byte         `gorm:"type:jsonb" json:"-"`
+
+	// Getter methods
+	AmenitiesData         Amenities         `gorm:"-" json:"amenities"`
+	SecurityFeatureData   SecurityFeature   `gorm:"-" json:"securityFeature"`
+	TechnologyFeatureData TechnologyFeature `gorm:"-" json:"technologyFeature"`
+	LuxuryFeatureData     LuxuryFeature     `gorm:"-" json:"luxuryFeature"`
+	CommunityFeatureData  CommunityFeature  `gorm:"-" json:"communityFeature"`
+	UtilsFeatureData      UtilsFeature      `gorm:"-" json:"utilsFeature"`
+	EnergyFeatureData     EnergyFeature     `gorm:"-" json:"energyFeature"`
+}
+
+// AfterFind hook
+func (p *PropertyFeature) AfterFind(tx *gorm.DB) error {
+
+	if len(p.Amenities) > 0 {
+		if err := json.Unmarshal(p.Amenities, &p.AmenitiesData); err != nil {
+			return err
+		}
+	}
+
+	if len(p.SecurityFeature) > 0 {
+		if err := json.Unmarshal(p.SecurityFeature, &p.SecurityFeatureData); err != nil {
+			return err
+		}
+	}
+
+	if len(p.TechnologyFeature) > 0 {
+		if err := json.Unmarshal(p.TechnologyFeature, &p.TechnologyFeatureData); err != nil {
+			return err
+		}
+	}
+
+	if len(p.LuxuryFeature) > 0 {
+		if err := json.Unmarshal(p.LuxuryFeature, &p.LuxuryFeatureData); err != nil {
+			return err
+		}
+	}
+
+	if len(p.CommunityFeature) > 0 {
+		if err := json.Unmarshal(p.CommunityFeature, &p.CommunityFeatureData); err != nil {
+			return err
+		}
+	}
+
+	if len(p.UtilsFeature) > 0 {
+		if err := json.Unmarshal(p.UtilsFeature, &p.UtilsFeatureData); err != nil {
+			return err
+		}
+	}
+
+	if len(p.EnergyFeature) > 0 {
+		if err := json.Unmarshal(p.EnergyFeature, &p.EnergyFeatureData); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (p *PropertyFeature) BeforeSave(tx *gorm.DB) error {
+	// Convert struct fields to JSON
+	var err error
+
+	p.Amenities, err = json.Marshal(p.AmenitiesData)
+	if err != nil {
+		return err
+	}
+
+	p.SecurityFeature, err = json.Marshal(p.SecurityFeatureData)
+	if err != nil {
+		return err
+	}
+
+	p.TechnologyFeature, err = json.Marshal(p.TechnologyFeatureData)
+	if err != nil {
+		return err
+	}
+
+	p.LuxuryFeature, err = json.Marshal(p.LuxuryFeatureData)
+	if err != nil {
+		return err
+	}
+
+	p.CommunityFeature, err = json.Marshal(p.CommunityFeatureData)
+	if err != nil {
+		return err
+	}
+
+	p.UtilsFeature, err = json.Marshal(p.UtilsFeatureData)
+	if err != nil {
+		return err
+	}
+
+	p.EnergyFeature, err = json.Marshal(p.EnergyFeatureData)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

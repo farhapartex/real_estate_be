@@ -141,3 +141,45 @@ func CreatePropertyFeature(ctx *gin.Context, authContoller *controllers.AuthCont
 
 	ctx.JSON(http.StatusCreated, response)
 }
+
+func PropertyFeatureDetails(ctx *gin.Context, authContoller *controllers.AuthController) {
+	idParam := ctx.Param("id")
+	propertyId, _ := strconv.ParseUint(idParam, 10, 32)
+
+	user, exists := ctx.Get("user")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	userID := uint(user.(models.User).ID)
+
+	response, err := authContoller.PropertyFeatureDetails(uint32(propertyId), userID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, response)
+}
+
+func DeletePropertyFeature(ctx *gin.Context, authContoller *controllers.AuthController) {
+	idParam := ctx.Param("id")
+	propertyId, _ := strconv.ParseUint(idParam, 10, 32)
+
+	user, exists := ctx.Get("user")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	userID := uint(user.(models.User).ID)
+
+	err := authContoller.DeletePropertyFeature(uint32(propertyId), userID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusNoContent, gin.H{})
+}
