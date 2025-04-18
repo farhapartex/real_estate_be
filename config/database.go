@@ -50,6 +50,7 @@ func MigrateDB() {
 		&models.Division{},
 		&models.District{},
 		&models.Property{},
+		&models.PropertyFeature{},
 	}
 
 	for _, model := range dbModels {

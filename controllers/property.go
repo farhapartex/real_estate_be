@@ -183,3 +183,20 @@ func (c *AuthController) PropertyPatch(propertyId uint32, userId uint, request d
 
 	return &response, nil
 }
+
+func (c *AuthController) CreatePropertyFeature(request dto.PropertyFeatureDTO, userID uint) (*dto.PropertyFeatureDetailsDTO, error) {
+	newPropFeature := mapper.PropertyFeatureDTOToModel(request)
+
+	tx := c.DB.Begin()
+	if err := tx.Create(&newPropFeature).Error; err != nil {
+		tx.Rollback()
+		return nil, errors.New("property feature creation failed: " + err.Error())
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return nil, errors.New("property feature creation failed during commit")
+	}
+
+	response := mapper.PropertyFeatureModelToDTO(newPropFeature)
+	return &response, nil
+}

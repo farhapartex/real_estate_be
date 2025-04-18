@@ -112,3 +112,32 @@ func PropertyUpdate(ctx *gin.Context, authContoller *controllers.AuthController)
 
 	ctx.JSON(http.StatusOK, response)
 }
+
+func CreatePropertyFeature(ctx *gin.Context, authContoller *controllers.AuthController) {
+	idParam := ctx.Param("id")
+	propertyId, _ := strconv.ParseUint(idParam, 10, 32)
+
+	user, exists := ctx.Get("user")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	userID := uint(user.(models.User).ID)
+
+	var request dto.PropertyFeatureDTO
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid data", "details": err.Error()})
+		return
+	}
+
+	request.PropertyID = uint(propertyId)
+
+	response, err := authContoller.CreatePropertyFeature(request, userID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, response)
+}

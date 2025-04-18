@@ -103,5 +103,8 @@ func RegisterRoute(r *gin.Engine, authController *controllers.AuthController) {
 		protectedAPI.PATCH("/owner/properties/:id", func(ctx *gin.Context) {
 			views.PropertyUpdate(ctx, authController)
 		})
+		protectedAPI.POST("/owner/properties/:id/features", func(ctx *gin.Context) {
+			views.CreatePropertyFeature(ctx, authController)
+		})
 	}
 }

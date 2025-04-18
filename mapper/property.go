@@ -72,3 +72,34 @@ func PropertyModelToDetailsResponseDTOMapper(property models.Property) dto.Prope
 		BuiltYear:    property.BuiltYear,
 	}
 }
+
+func PropertyFeatureModelToDTO(propFeat models.PropertyFeature) dto.PropertyFeatureDetailsDTO {
+	return dto.PropertyFeatureDetailsDTO{
+		ID:                uint(propFeat.ID),
+		PropertyID:        propFeat.PropertyID,
+		Features:          propFeat.Features,
+		Amenities:         dto.AmenitiesDTO(propFeat.Amenities),
+		SecurityFeature:   dto.SecurityFeatureDTO(propFeat.SecurityFeature),
+		TechnologyFeature: dto.TechnologyFeatureDTO(propFeat.TechnologyFeature),
+		LuxuryFeature:     dto.LuxuryFeatureDTO(propFeat.LuxuryFeature),
+		CommunityFeature:  dto.CommunityFeatureDTO(propFeat.CommunityFeature),
+		UtilsFeature:      dto.UtilsFeatureDTO(propFeat.UtilsFeature),
+		EnergyFeature:     dto.EnergyFeatureDTO(propFeat.EnergyFeature),
+		CreatedAt:         propFeat.CreatedAt,
+		UpdatedAt:         propFeat.UpdatedAt,
+	}
+}
+
+func PropertyFeatureDTOToModel(request dto.PropertyFeatureDTO) models.PropertyFeature {
+	return models.PropertyFeature{
+		PropertyID:        request.PropertyID,
+		Features:          request.Features,
+		Amenities:         models.Amenities(request.Amenities),
+		SecurityFeature:   models.SecurityFeature(request.SecurityFeature),
+		TechnologyFeature: models.TechnologyFeature(request.TechnologyFeature),
+		LuxuryFeature:     models.LuxuryFeature(request.LuxuryFeature),
+		CommunityFeature:  models.CommunityFeature(request.CommunityFeature),
+		UtilsFeature:      models.UtilsFeature(request.UtilsFeature),
+		EnergyFeature:     models.EnergyFeature(request.EnergyFeature),
+	}
+}

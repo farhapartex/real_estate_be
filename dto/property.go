@@ -1,5 +1,7 @@
 package dto
 
+import "time"
+
 type PropertyRequestDTO struct {
 	Title        string  `json:"title" binding:"required"`
 	Purpose      string  `json:"purpose" binding:"required,oneof=sale rent"`
@@ -75,4 +77,112 @@ type PropertyFilterDTO struct {
 	Page         int     `form:"page,default=1"`
 	PerPage      int     `form:"per_page,default=10"`
 	Status       string  `form:"status"`
+}
+
+type AmenitiesDTO struct {
+	AirConditioning  bool    `json:"airConditioning"`
+	Heating          bool    `json:"heating"`
+	Furnished        bool    `json:"furnished"`
+	PetsAllowed      bool    `json:"petsAllowed"`
+	WasherDryer      bool    `json:"washerDryer"`
+	InUnitLaundry    bool    `json:"inUnitLaundry"`
+	Elevator         bool    `json:"elevator"`
+	OutdoorSpace     bool    `json:"outdoorSpace"`
+	Balcony          bool    `json:"balcony"`
+	DisabilityAccess bool    `json:"disabilityAccess"`
+	HardwoodFloors   bool    `json:"hardwoodFloors"`
+	Fireplace        bool    `json:"fireplace"`
+	Pool             bool    `json:"pool"`
+	Gym              bool    `json:"gym"`
+	Parking          int     `json:"parking"`
+	Garages          int     `json:"garages"`
+	CeilingHeight    float64 `json:"ceilingHeight"`
+	LotSize          float64 `json:"lotSize"`
+}
+
+type SecurityFeatureDTO struct {
+	SecuritySystem bool `json:"securitySystem"`
+	Doorman        bool `json:"doorman"`
+	SecurityCamera bool `json:"securityCamera"`
+	GatedCommunity bool `json:"gatedCommunity"`
+	FireAlarm      bool `json:"fireAlarm"`
+}
+
+type TechnologyFeatureDTO struct {
+	InternetWifi    bool `json:"internetWifi"`
+	SmartHome       bool `json:"smartHome"`
+	Dishwasher      bool `json:"dishwasher"`
+	GarbageDisposal bool `json:"garbageDisposal"`
+	CableTV         bool `json:"cableTV"`
+	Refrigerator    bool `json:"refrigerator"`
+	Microwave       bool `json:"microwave"`
+	StoveOven       bool `json:"stoveOven"`
+	CeilingFans     bool `json:"ceilingFans"`
+}
+
+type LuxuryFeatureDTO struct {
+	Fireplace     bool `json:"fireplace"`
+	Pool          bool `json:"pool"`
+	Gym           bool `json:"gym"`
+	WalkInClosets bool `json:"walkInClosets"`
+	Jacuzzi       bool `json:"jacuzzi"`
+	Sauna         bool `json:"sauna"`
+}
+
+type CommunityFeatureDTO struct {
+	Concierge       bool `json:"concierge"`
+	BusinessCenter  bool `json:"businessCenter"`
+	ConferenceRoom  bool `json:"conferenceRoom"`
+	GuestParking    bool `json:"guestParking"`
+	Playground      bool `json:"playground"`
+	BBQArea         bool `json:"bbqArea"`
+	CommunityGarden bool `json:"communityGarden"`
+	TennisCourt     bool `json:"tennisCourt"`
+	BasketballCourt bool `json:"basketballCourt"`
+}
+
+type UtilsFeatureDTO struct {
+	WaterIncluded        bool `json:"waterIncluded"`
+	GasIncluded          bool `json:"gasIncluded"`
+	ElectricityIncluded  bool `json:"electricityIncluded"`
+	TrashRemovalIncluded bool `json:"trashRemovalIncluded"`
+	InternetIncluded     bool `json:"internetIncluded"`
+}
+
+type EnergyFeatureDTO struct {
+	SolarPanels               bool `json:"solarPanels"`
+	EnergyEfficientAppliances bool `json:"energyEfficientAppliances"`
+	GreenCertification        bool `json:"greenCertification"`
+	EVCharging                bool `json:"evCharging"`
+	RainwaterHarvesting       bool `json:"rainwaterHarvesting"`
+	ProgrammableThermostat    bool `json:"programmableThermostat"`
+}
+
+type PropertyFeatureDTO struct {
+	PropertyID uint     `json:"property_id"`
+	Features   []string `json:"features"`
+
+	Amenities         AmenitiesDTO         `json:"amenities"`
+	SecurityFeature   SecurityFeatureDTO   `json:"securityFeature"`
+	TechnologyFeature TechnologyFeatureDTO `json:"technologyFeature"`
+	LuxuryFeature     LuxuryFeatureDTO     `json:"luxuryFeature"`
+	CommunityFeature  CommunityFeatureDTO  `json:"communityFeature"`
+	UtilsFeature      UtilsFeatureDTO      `json:"utilsFeature"`
+	EnergyFeature     EnergyFeatureDTO     `json:"energyFeature"`
+}
+
+type PropertyFeatureDetailsDTO struct {
+	ID         uint      `json:"id"`
+	CreatedAt  time.Time `json:"createdAt"`
+	UpdatedAt  time.Time `json:"updatedAt"`
+	PropertyID uint      `json:"property_id" binding:"required"`
+	Features   []string  `json:"features"`
+
+	Amenities         AmenitiesDTO         `json:"amenities"`
+	SecurityFeature   SecurityFeatureDTO   `json:"securityFeature"`
+	TechnologyFeature TechnologyFeatureDTO `json:"technologyFeature"`
+	LuxuryFeature     LuxuryFeatureDTO     `json:"luxuryFeature"`
+	CommunityFeature  CommunityFeatureDTO  `json:"communityFeature"`
+	UtilsFeature      UtilsFeatureDTO      `json:"utilsFeature"`
+	EnergyFeature     EnergyFeatureDTO     `json:"energyFeature"`
 }

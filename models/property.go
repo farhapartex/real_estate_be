@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
 
@@ -133,7 +134,7 @@ type PropertyFeature struct {
 	gorm.Model
 	PropertyID        uint              `json:"property_id"`
 	Property          Property          `gorm:"foreignKey:PropertyID" json:"property"`
-	Features          []string          `gorm:"type:text[]" json:"features"`
+	Features          pq.StringArray    `gorm:"type:text[]" json:"features"`
 	Amenities         Amenities         `gorm:"type:jsonb" json:"amenities"`
 	SecurityFeature   SecurityFeature   `gorm:"type:jsonb" json:"securityFeature"`
 	TechnologyFeature TechnologyFeature `gorm:"type:jsonb" json:"technologyFeature"`
