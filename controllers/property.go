@@ -152,3 +152,34 @@ func (c *AuthController) PropertyDetails(propertyId uint32, userId uint) (*dto.P
 
 	return &response, nil
 }
+
+func (c *AuthController) PropertyPatch(propertyId uint32, userId uint, request dto.PropertyRequestDTO) (*dto.PropertyResponseDTO, error) {
+	var property models.Property
+
+	if err := c.DB.Where("owner_id = ? AND id = ?", userId, propertyId).First(&property).Error; err != nil {
+		return nil, errors.New("Property not found")
+	}
+
+	result := c.DB.Model(&property).Updates(models.Property{
+		Title:        request.Title,
+		Purpose:      models.PropertyString(request.Purpose),
+		Price:        request.Price,
+		PropertyType: request.PropertyType,
+		Bedrooms:     request.Bedrooms,
+		Bathrooms:    request.Bathrooms,
+		Size:         request.Size,
+		BuiltYear:    request.BuiltYear,
+		CountryID:    request.CountryID,
+		DivisionID:   request.DivisionID,
+		Address:      request.Address,
+		Description:  request.Description,
+	})
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	response := mapper.PropertyModelToDetailsResponseDTOMapper(property)
+
+	return &response, nil
+}

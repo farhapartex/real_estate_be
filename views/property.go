@@ -87,3 +87,28 @@ func PropertyDetails(ctx *gin.Context, authContoller *controllers.AuthController
 
 	ctx.JSON(http.StatusOK, response)
 }
+
+func PropertyUpdate(ctx *gin.Context, authContoller *controllers.AuthController) {
+	idParam := ctx.Param("id")
+	propertyId, err := strconv.ParseUint(idParam, 10, 32)
+	user, exists := ctx.Get("user")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	userID := uint(user.(models.User).ID)
+	var request dto.PropertyRequestDTO
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid data", "details": err.Error()})
+		return
+	}
+
+	response, err := authContoller.PropertyPatch(uint32(propertyId), userID, request)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, response)
+}

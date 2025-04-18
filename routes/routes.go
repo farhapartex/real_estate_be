@@ -100,5 +100,8 @@ func RegisterRoute(r *gin.Engine, authController *controllers.AuthController) {
 		protectedAPI.GET("/owner/properties/:id", func(ctx *gin.Context) {
 			views.PropertyDetails(ctx, authController)
 		})
+		protectedAPI.PATCH("/owner/properties/:id", func(ctx *gin.Context) {
+			views.PropertyUpdate(ctx, authController)
+		})
 	}
 }
